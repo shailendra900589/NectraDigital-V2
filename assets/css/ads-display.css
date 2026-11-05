@@ -1,18 +1,42 @@
-/* Pending ad slots stay invisible until Google/image fill (see ads-display.js). */
+/* Default pending: collapsed in article (badges hidden). Load zones override below. */
 .nd-ad-slot.nd-ad-pending {
-    max-height: 0 !important;
-    opacity: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    pointer-events: none !important;
+    pointer-events: none;
 }
 
 .nd-ad-slot.nd-ad-pending .nd-ad-badge,
 .nd-ad-slot.nd-ad-pending .sidebar-ad-badge {
     display: none !important;
+}
+
+/* Inline + mid/footer: room for AdSense (display + text) while loading */
+.nd-inline-ad-card.nd-ad-pending,
+.nd-sponsored-band .nd-ad-slot.nd-ad-pending {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    margin: 1rem 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    pointer-events: auto !important;
+}
+
+.nd-inline-ad-card.nd-ad-pending ins.adsbygoogle,
+.nd-sponsored-band .nd-ad-pending ins.adsbygoogle {
+    display: block !important;
+    width: 100% !important;
+    min-height: 200px !important;
+    height: auto !important;
+}
+
+.nd-ad-text-format.nd-ad-pending ins.adsbygoogle,
+.nd-ad-code-text ins.adsbygoogle {
+    min-height: 120px !important;
+}
+
+.sidebar-ad-stack .nd-ad-text-format.nd-ad-pending ins.adsbygoogle {
+    min-height: 160px !important;
 }
 
 .nd-ad-slot.nd-ad-filled {
@@ -47,12 +71,6 @@
 .nd-ad-slot.nd-ad-filled ins.adsbygoogle {
     display: block;
     min-height: 90px;
-}
-
-/* Inline / footer: keep pending collapsed (no blank boxes in article body) */
-.nd-ad-slot.nd-ad-pending:not(.sidebar-ad-card) ins.adsbygoogle {
-    min-height: 0 !important;
-    height: 0 !important;
 }
 
 /*

@@ -163,16 +163,13 @@ $is_orphan_post = blog_is_orphan($post);
 $sanitized_post_content = nectra_sanitize_blog_html($post['content']);
 $post_paragraph_count = ad_count_content_paragraphs($sanitized_post_content);
 
-if ($is_orphan_post) {
-    $adPlan = ad_prepare_post_page_ads($conn, 12, [
-        'dense' => true,
-        'allow_duplicate_units' => true,
-        'sidebar_max' => 12,
-        'paragraph_count' => $post_paragraph_count,
-    ]);
-} else {
-    $adPlan = ad_prepare_post_page_ads($conn);
-}
+$adPlan = ad_prepare_post_page_ads($conn, $is_orphan_post ? 12 : 10, [
+    'dense' => true,
+    'allow_duplicate_units' => true,
+    'sidebar_max' => $is_orphan_post ? 12 : 10,
+    'paragraph_count' => $post_paragraph_count,
+    'profile' => $is_orphan_post ? 'orphan' : 'standard',
+]);
 
 $sidebar_ad_html = $adPlan['sidebar_html'];
 $sidebar_ad_count = $adPlan['sidebar_count'];
@@ -346,7 +343,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
     .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 0; }
 </style>
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=3">
+<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=4">
 
 <main>
     <header class="post-hero-header text-center">
@@ -521,5 +518,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     </article>
 </main>
 
-<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=3" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=4" defer></script>
 <?php include 'includes/footer.php'; ?>

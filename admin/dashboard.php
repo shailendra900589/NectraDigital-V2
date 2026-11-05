@@ -339,7 +339,8 @@ admin_layout_start($pageTitles[$page], $page, [
 
         if(isset($_POST['save_ad'])){
             $title = clean_input($_POST['title']);
-            $type = $_POST['type'] === 'code' ? 'code' : 'image';
+            $typeRaw = (string)($_POST['type'] ?? 'image');
+            $type = in_array($typeRaw, ['code', 'text'], true) ? $typeRaw : 'image';
             $placement = in_array($_POST['placement'] ?? '', ['header', 'sidebar', 'content'], true)
                 ? $_POST['placement']
                 : 'sidebar';
@@ -357,7 +358,7 @@ admin_layout_start($pageTitles[$page], $page, [
             }
 
             $canSave = !isset($upload) || isset($upload['success']);
-            if ($canSave && $type === 'code' && $code === '') {
+            if ($canSave && in_array($type, ['code', 'text'], true) && $code === '') {
                 echo "<div class='alert alert-danger'>Paste your Google AdSense snippet in the code box.</div>";
                 $canSave = false;
             }
@@ -374,12 +375,12 @@ admin_layout_start($pageTitles[$page], $page, [
 
         echo "<div class='ge-card mb-4'>
             <h5 class='ge-section-head'>Create New Ad Unit</h5>
-            <p class='text-muted small mb-3'>Blog sidebar lists <strong>every valid active ad</strong> (Sidebar first, then Top Banner and In-Article if needed) — one card per row, no duplicates. For AdSense paste the full unit with <code>&lt;ins class=\"adsbygoogle\"&gt;</code>, not the loader script alone.</p>
+            <p class='text-muted small mb-3'>Blog detail pages show <strong>every valid active ad</strong> (sidebar, in-article, mid + footer bands). Use separate AdSense units for display vs text/in-feed (<code>data-ad-format=&quot;autorelaxed&quot;</code> etc.) — each unique <code>data-ad-slot</code> counts as its own unit. Paste full <code>&lt;ins class=\"adsbygoogle\"&gt;</code>, not the loader script alone.</p>
             <form method='POST' enctype='multipart/form-data'>
                 <div class='row g-3'>
                     <div class='col-md-4'><input type='text' name='title' class='form-control' placeholder='Ad Name' required></div>
                     <div class='col-md-2'><select name='placement' class='form-select'><option value='header'>Top Banner</option><option value='sidebar'>Sidebar</option><option value='content'>In-Article</option></select></div>
-                    <div class='col-md-2'><select name='type' class='form-select' onchange='toggleAdType(this.value)'><option value='image'>Custom Image</option><option value='code'>Google Code</option></select></div>
+                    <div class='col-md-2'><select name='type' class='form-select' onchange='toggleAdType(this.value)'><option value='image'>Custom Image</option><option value='code'>Display AdSense</option><option value='text'>Text / In-feed AdSense</option></select></div>
                     <div class='col-md-4 ad-image-group'><input type='file' name='image' class='form-control mb-2'><input type='text' name='link' class='form-control' placeholder='Link URL'></div>
                     <div class='col-12 ad-code-group' style='display:none;'><textarea name='ad_code' class='form-control' rows='3' placeholder='Paste Google Adsense Code here'></textarea></div>
                     <div class='col-12'><button type='submit' name='save_ad' class='btn btn-ge-primary w-100'>Create Ad</button></div>
@@ -403,7 +404,7 @@ admin_layout_start($pageTitles[$page], $page, [
             var imgGroup = document.querySelector('.ad-image-group');
             var codeGroup = document.querySelector('.ad-code-group');
             if (!imgGroup || !codeGroup) return;
-            if (val === 'code') {
+            if (val === 'code' || val === 'text') {
                 imgGroup.style.display = 'none';
                 codeGroup.style.display = 'block';
             } else {

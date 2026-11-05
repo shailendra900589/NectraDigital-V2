@@ -65,6 +65,28 @@ function ad_image_file_available(?string $path): bool
     return is_file($local);
 }
 
+/** Extract AdSense slot id so display vs text units are not treated as duplicates. */
+function ad_extract_adsense_slot(string $code): string
+{
+    if (preg_match('/data-ad-slot\s*=\s*["\']([^"\']+)["\']/i', $code, $m)) {
+        return trim($m[1]);
+    }
+    return '';
+}
+
+/** Text / in-feed / multiplex AdSense units (smaller vertical space). */
+function ad_code_is_text_format(string $code): bool
+{
+    $code = strtolower($code);
+    if (preg_match('/data-ad-format\s*=\s*["\']([^"\']+)["\']/i', $code, $m)) {
+        $fmt = strtolower($m[1]);
+        if (str_contains($fmt, 'fluid') || str_contains($fmt, 'autorelaxed') || str_contains($fmt, 'link')) {
+            return true;
+        }
+    }
+    return (bool) preg_match('/data-ad-layout\s*=\s*["\']in-article["\']/i', $code);
+}
+
 /** True when pasted code includes a real ad unit, not loader-only snippets. */
 function ad_code_has_ad_unit(string $code): bool
 {
@@ -79,13 +101,19 @@ function ad_code_has_ad_unit(string $code): bool
     if (stripos($code, '<iframe') !== false) {
         return true;
     }
+    if (stripos($code, 'googletag.defineSlot') !== false || stripos($code, 'googletag.display') !== false) {
+        return true;
+    }
+    if (preg_match('/\(adsbygoogle\s*=\s*window\.adsbygoogle[^)]*\)\.push\s*\(/i', $code)) {
+        return stripos($code, '<ins') !== false || stripos($code, 'adsbygoogle') !== false;
+    }
 
     // Loader script alone (common bad paste) is not an impression unit.
     if (stripos($code, 'adsbygoogle.js') !== false && stripos($code, '<ins') === false) {
         return false;
     }
 
-    return (bool) preg_match('/<(ins|iframe|embed|object|img)\b/i', $code);
+    return (bool) preg_match('/<(ins|iframe|embed|object|img|div)\b/i', $code);
 }
 
 function ad_normalize_ad_code(string $code): string
@@ -100,13 +128,23 @@ function ad_normalize_ad_code(string $code): string
     return trim($code);
 }
 
+function ad_is_image_type(array $ad): bool
+{
+    $type = strtolower(trim((string)($ad['type'] ?? '')));
+    $imagePath = trim((string)($ad['image_path'] ?? ''));
+    if (in_array($type, ['code', 'text', 'adsense', 'google'], true)) {
+        return false;
+    }
+    return $type === 'image' || ($type === '' && $imagePath !== '');
+}
+
 function ad_has_displayable_content(array $ad): bool
 {
     $type = strtolower(trim((string)($ad['type'] ?? '')));
     $imagePath = trim((string)($ad['image_path'] ?? ''));
     $adCode = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
 
-    if ($type === 'code') {
+    if (in_array($type, ['code', 'text', 'adsense', 'google'], true)) {
         return ad_code_has_ad_unit($adCode);
     }
 
@@ -141,7 +179,12 @@ function ad_fingerprint(array $ad): string
     if ($type === 'image' || ($type === '' && $imagePath !== '')) {
         return 'img:' . $imagePath;
     }
-    return 'code:' . md5(ad_normalize_ad_code((string)($ad['ad_code'] ?? '')));
+    $code = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
+    $slot = ad_extract_adsense_slot($code);
+    if ($slot !== '') {
+        return 'code:slot:' . $slot;
+    }
+    return 'code:' . md5($code);
 }
 
 /** Drop duplicate DB rows that share the same image or AdSense snippet. */
@@ -170,12 +213,14 @@ function ad_slot_open(array $ad, string $variant): string
         $data .= ' data-nd-ad-instance="' . htmlspecialchars($instance, ENT_QUOTES, 'UTF-8') . '"';
     }
 
+    $textClass = !empty($ad['_text_format']) ? ' nd-ad-text-format' : '';
+
     if ($variant === 'sidebar') {
-        return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm nd-ad-slot nd-ad-pending"' . $data . '>'
+        return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm nd-ad-slot nd-ad-pending' . $textClass . '"' . $data . '>'
             . '<span class="badge bg-secondary sidebar-ad-badge nd-ad-badge">Sponsored</span>';
     }
     if ($variant === 'inline' || $variant === 'banner-light') {
-        return '<div class="nd-inline-ad-card border rounded bg-white shadow-sm my-4 nd-ad-slot nd-ad-pending"' . $data . '>'
+        return '<div class="nd-inline-ad-card border rounded bg-white shadow-sm my-4 nd-ad-slot nd-ad-pending' . $textClass . '"' . $data . '>'
             . '<span class="badge bg-secondary nd-ad-badge nd-inline-ad-badge">Sponsored</span>';
     }
 
@@ -191,8 +236,7 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
     $isSidebar = ($variant === 'sidebar');
     $isInline = ($variant === 'inline' || $variant === 'banner-light');
     $html = '';
-    $type = strtolower(trim((string)($ad['type'] ?? '')));
-    $isImageAd = ($type === 'image' || ($type === '' && trim($ad['image_path'] ?? '') !== ''));
+    $isImageAd = ad_is_image_type($ad);
 
     if ($isImageAd) {
         $adImg = ad_resolve_image_url($ad['image_path'] ?? '');
@@ -218,9 +262,13 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
     } else {
         $code = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
         if ($code !== '' && ad_code_has_ad_unit($code)) {
+            if (ad_code_is_text_format($code)) {
+                $ad['_text_format'] = true;
+            }
             ad_track_adsense_units($code);
+            $codeWrapClass = 'sidebar-ad-code p-3' . (!empty($ad['_text_format']) ? ' nd-ad-code-text' : '');
             if ($isSidebar || $isInline) {
-                $html .= '<div class="sidebar-ad-code p-3">' . $code . '</div>';
+                $html .= '<div class="' . $codeWrapClass . '">' . $code . '</div>';
             } else {
                 $html .= '<div class="mt-3" style="margin-top:15px; color:#fff;">' . $code . '</div>';
             }
@@ -483,6 +531,9 @@ function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6, array $opti
     $inlineUnits = [];
 
     if ($dense && $ads !== []) {
+        $profile = (string)($options['profile'] ?? 'standard');
+        $isOrphanProfile = ($profile === 'orphan');
+
         $sidebarAds = array_slice($ads, 0, min($sidebarMax, count($ads)));
         $sidebarChunks = [];
         foreach ($sidebarAds as $i => $ad) {
@@ -494,15 +545,19 @@ function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6, array $opti
         }
 
         $paraCount = max(4, (int)($options['paragraph_count'] ?? 0));
-        $inlineTarget = min(24, max(count($ads) * 2, (int)ceil($paraCount / 1.15)));
+        $inlineCap = $isOrphanProfile ? 24 : 18;
+        $inlineTarget = min($inlineCap, max(count($ads) * 2, (int)ceil($paraCount / ($isOrphanProfile ? 1.15 : 1.6))));
         $inlineUnits = ad_build_cycled_units($ads, $inlineTarget, 'inline');
 
+        $midCount = min($isOrphanProfile ? 3 : 2, max(2, count($ads)));
+        $footerCount = min($isOrphanProfile ? 9 : 6, max(3, count($ads) * 2));
+
         $midHtml = ad_wrap_sponsored_grid(
-            ad_build_cycled_units($ads, min(3, max(2, count($ads))), 'inline'),
+            ad_build_cycled_units($ads, $midCount, 'inline'),
             'nd-sponsored-mid my-4'
         );
         $footerHtml = ad_wrap_sponsored_grid(
-            ad_build_cycled_units($ads, min(9, max(4, count($ads) * 2)), 'banner-light'),
+            ad_build_cycled_units($ads, $footerCount, 'banner-light'),
             'nd-sponsored-footer mt-2 mb-4'
         );
     } else {
@@ -627,21 +682,26 @@ function nectra_render_adsense_init(): void
 <script>
 (function () {
     function initNectraAdsense() {
-        var units = document.querySelectorAll('ins.adsbygoogle');
+        var units = document.querySelectorAll('ins.adsbygoogle:not([data-nd-ads-pushed])');
         if (!units.length) {
             return;
         }
-        units.forEach(function () {
+        units.forEach(function (ins) {
             try {
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
+                ins.setAttribute('data-nd-ads-pushed', '1');
             } catch (e) {}
         });
+        if (typeof window.dispatchEvent === 'function') {
+            window.dispatchEvent(new CustomEvent('nectra-adsense-init'));
+        }
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initNectraAdsense);
     } else {
         initNectraAdsense();
     }
+    window.addEventListener('load', initNectraAdsense);
 })();
 </script>
     <?php
