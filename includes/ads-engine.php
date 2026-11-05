@@ -337,16 +337,23 @@ function render_sidebar_ads(mysqli $conn): int
         return 0;
     }
 
-    echo '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . count($ads) . '">';
     $rendered = 0;
+    $chunks = [];
     foreach ($ads as $ad) {
         $html = ad_render_unit($ad, 'sidebar');
         if ($html === '') {
             continue;
         }
-        echo $html;
+        $chunks[] = $html;
         $rendered++;
     }
+
+    if ($rendered === 0) {
+        return 0;
+    }
+
+    echo '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . $rendered . '">';
+    echo implode('', $chunks);
     echo '</div>';
 
     return $rendered;
