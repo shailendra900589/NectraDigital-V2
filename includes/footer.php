@@ -19,8 +19,8 @@ $footer_cities = array_slice(get_cities_data(), 0, 8, true);
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="<?php echo SITE_URL; ?>/assets/js/main.js?v=3" defer></script>
-<script src="<?php echo SITE_URL; ?>/assets/js/motion.js?v=7" defer></script>
-<script src="<?php echo SITE_URL; ?>/assets/js/depth-3d.js?v=5" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/motion.js?v=8" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/depth-3d.js?v=6" defer></script>
 
 <?php
 $nectraChatbotEnabled = false;

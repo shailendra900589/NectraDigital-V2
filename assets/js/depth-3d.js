@@ -56,9 +56,10 @@
         var cardSel =
             '.nd-card, .svc-hero-card, .nd-cta-card, .nd-card-dark, .svc-deliverable, .svc-engagement-card, ' +
             '.svc-challenge-card, .svc-benefit-card, .svc-tech-panel, .svc-sidebar-card, .svc-quick-answer, ' +
-            '.aeo-card, .blog-card:not(.blog-card--link), .nd-home-dashboard, .svc-stat-box, .svc-glance-stat, .nd-process-step';
+            '.aeo-card, .blog-card:not(.blog-card--link):not(.nd-insights-card), .nd-home-dashboard, .svc-stat-box, .svc-glance-stat, .nd-process-step';
         document.querySelectorAll(cardSel).forEach(function (el) {
-            if (el.classList.contains('blog-card--link')) return;
+            if (el.classList.contains('blog-card--link') || el.classList.contains('nd-insights-card')) return;
+            if (el.closest('[data-nd-insights-grid]')) return;
             el.classList.add('nd-depth-card');
         });
 

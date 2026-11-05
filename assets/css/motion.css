@@ -160,6 +160,31 @@ a.blog-card--link:focus-visible {
     outline-offset: 3px;
 }
 
+/* Insights list — Bootstrap stretched-link over full card */
+article.nd-insights-card {
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+article.nd-insights-card .nd-insights-post-link {
+    z-index: 5;
+}
+
+article.nd-insights-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+article.nd-insights-card:focus-within {
+    outline: 2px solid var(--nd-primary-blue, #2563eb);
+    outline-offset: 3px;
+}
+
+.nd-insights-grid .nd-motion-div {
+    display: none !important;
+}
+
 /* —— Smart div motion (scroll spring + hover glow) —— */
 .nd-motion-div {
     opacity: 0;

@@ -68,8 +68,8 @@ if (!$dbUnavailable) {
     <!-- TRUST STRIP -->
     <?php include __DIR__ . '/includes/ui/trust-bar.php'; ?>
 
-    <!-- ARTICLES GRID -->
-    <section class="py-5">
+    <!-- ARTICLES GRID (no section motion — keeps links clickable) -->
+    <section class="py-5 nd-no-section-animate nd-insights-grid" data-nd-insights-grid>
         <div class="container py-3">
             <?php if (!empty($dbUnavailable) && function_exists('nectra_is_local_environment') && nectra_is_local_environment()): ?>
             <div class="alert alert-warning border-0 shadow-sm mb-4" role="status">
@@ -94,7 +94,7 @@ if (!$dbUnavailable) {
                         $byline = nectra_blog_byline();
                 ?>
                 <div class="col-md-6">
-                    <a href="<?php echo htmlspecialchars($post_href, ENT_QUOTES, 'UTF-8'); ?>" class="blog-card nd-card blog-card--link p-4 h-100 d-flex flex-column bg-white shadow-sm text-decoration-none text-dark">
+                    <article class="blog-card nd-card nd-insights-card p-4 h-100 d-flex flex-column bg-white shadow-sm position-relative">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <span class="badge bg-light text-primary border fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">
                                 <?php echo $post_category; ?>
@@ -126,7 +126,10 @@ if (!$dbUnavailable) {
                                 Read Article <i class="fas fa-arrow-right ms-1"></i>
                             </span>
                         </div>
-                    </a>
+                        <a href="<?php echo htmlspecialchars($post_href, ENT_QUOTES, 'UTF-8'); ?>"
+                           class="stretched-link nd-insights-post-link"
+                           aria-label="<?php echo htmlspecialchars('Read article: ' . strip_tags($post_title), ENT_QUOTES, 'UTF-8'); ?>"></a>
+                    </article>
                 </div>
                 <?php
                     }
@@ -185,4 +188,5 @@ if (!$dbUnavailable) {
     <?php include __DIR__ . '/includes/ui/cta.php'; ?>
 </main>
 
+<script src="<?php echo SITE_URL; ?>/assets/js/insights-cards.js?v=1" defer></script>
 <?php include 'includes/footer.php'; ?>

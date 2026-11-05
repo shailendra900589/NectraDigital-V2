@@ -86,7 +86,7 @@
 
     function shouldSkipDiv(div) {
         if (!div || div.nodeType !== 1) return true;
-        if (div.closest && div.closest('a.blog-card--link')) return true;
+        if (div.closest && div.closest('a.blog-card--link, article.nd-insights-card, article.blog-card')) return true;
         if (div.matches(divSkipSelector)) return true;
         if (div.closest(divSkipSelector)) return true;
         if (div.closest('header.svc-hero, .nd-hero-home') && !div.closest('.svc-hero-card, .nd-home-dashboard')) {
@@ -132,8 +132,14 @@
 
         queries.forEach(function (q) {
             document.querySelectorAll(q).forEach(function (div) {
+                if (div.closest('[data-nd-insights-grid]')) return;
                 if (seen.has(div) || !qualifiesDiv(div)) return;
-                if (/\bcol(-|$)/.test(div.className) && div.querySelector(':scope > .nd-card, :scope > article, :scope > .aeo-card, :scope > .blog-card')) {
+                if (
+                    /\bcol(-|$)/.test(div.className) &&
+                    div.querySelector(
+                        ':scope > .nd-card, :scope > article, :scope > .aeo-card, :scope > .blog-card, :scope > a.blog-card--link, :scope > article.nd-insights-card'
+                    )
+                ) {
                     return;
                 }
                 seen.add(div);
@@ -183,7 +189,7 @@
         '.nd-card-dark',
         '.svc-stat-box',
         '.aeo-card',
-        '.blog-card:not(.blog-card--link)',
+        'article.blog-card:not(.nd-insights-card)',
         'article.card',
         '.nd-city-chips .btn',
         '.filter-btn'
@@ -235,6 +241,7 @@
 
         document.querySelectorAll(componentSelector).forEach(function (el) {
             if (el.closest('.nd-contact-section')) return;
+            if (el.closest('[data-nd-insights-grid]')) return;
             if (el.closest('.svc-hero-card, .nd-hero-home .nd-home-dashboard')) return;
             if (el.matches('.btn, .btn-nectra-primary') && el.closest('.svc-hero, .nd-hero-home, header.nd-page-hero, header.svc-hero')) return;
             if (!el.classList.contains('nd-reveal') && !el.classList.contains('nd-reveal-fade')) {
