@@ -4,6 +4,12 @@
 (function () {
     'use strict';
 
+    var sidebarGraceUntil = 0;
+
+    function isSidebarSlot(slot) {
+        return !!(slot && slot.closest && slot.closest('.sidebar-ad-stack'));
+    }
+
     function adSlotFilled(slot) {
         if (!slot) return false;
 
@@ -63,6 +69,9 @@
                 return;
             }
             if (state === false) {
+                if (isSidebarSlot(slot) && Date.now() < sidebarGraceUntil) {
+                    return;
+                }
                 removeSlot(slot);
             }
         });
@@ -99,11 +108,13 @@
     }
 
     function init() {
+        sidebarGraceUntil = Date.now() + 18000;
+
         document.querySelectorAll('ins.adsbygoogle').forEach(watchAdSense);
         bindImages();
 
         var passes = 0;
-        var maxPasses = 16;
+        var maxPasses = 24;
         var timer = setInterval(function () {
             evaluateSlots();
             passes++;
@@ -114,6 +125,10 @@
             setTimeout(evaluateSlots, 1200);
             setTimeout(evaluateSlots, 3500);
             setTimeout(evaluateSlots, 6500);
+            setTimeout(function () {
+                sidebarGraceUntil = 0;
+                evaluateSlots();
+            }, 18000);
         });
     }
 

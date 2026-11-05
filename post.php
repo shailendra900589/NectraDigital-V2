@@ -346,7 +346,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
     .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 0; }
 </style>
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=2">
+<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=3">
 
 <main>
     <header class="post-hero-header text-center">
@@ -379,7 +379,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
             <div class="row justify-content-center"><div class="col-12"><?php echo $post_header_ad_html; ?></div></div>
             <?php endif; ?>
 
-            <div class="row mt-4 align-items-start g-4">
+            <div class="row mt-4 align-items-start g-4<?php echo $has_sidebar ? ' nd-post-row-with-sidebar' : ''; ?>">
                 <div class="<?php echo $main_col_class; ?>">
                     <?php if(!empty($display_img)): ?>
                     <div class="mb-5 rounded overflow-hidden border border-secondary shadow-lg position-relative" style="z-index: 3;">
@@ -521,5 +521,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     </article>
 </main>
 
-<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=2" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=3" defer></script>
 <?php include 'includes/footer.php'; ?>

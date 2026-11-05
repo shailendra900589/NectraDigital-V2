@@ -49,20 +49,53 @@
     min-height: 90px;
 }
 
-.nd-ad-slot.nd-ad-pending ins.adsbygoogle {
+/* Inline / footer: keep pending collapsed (no blank boxes in article body) */
+.nd-ad-slot.nd-ad-pending:not(.sidebar-ad-card) ins.adsbygoogle {
     min-height: 0 !important;
     height: 0 !important;
 }
 
-/* Full-width article until at least one sidebar ad actually fills */
+/*
+ * Sidebar: AdSense needs visible dimensions while loading.
+ * Zero-height <ins> never receives fills, so the column stayed empty/hidden.
+ */
+.sidebar-ad-stack .nd-ad-slot.nd-ad-pending {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    margin: 0 0 1.15rem !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    pointer-events: auto !important;
+    background: transparent !important;
+}
+
+.sidebar-ad-stack .nd-ad-slot.nd-ad-pending ins.adsbygoogle {
+    display: block !important;
+    min-height: 280px !important;
+    height: auto !important;
+    width: 100% !important;
+}
+
+.sidebar-ad-stack .nd-ad-slot.nd-ad-filled.sidebar-ad-card {
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+    background: #FFFFFF !important;
+    margin-bottom: 1.15rem !important;
+    padding: 0 !important;
+}
+
 @media (min-width: 992px) {
-    .row:has(.nd-post-sidebar-col:not(:has(.nd-ad-filled))) .nd-post-main-col {
-        flex: 0 0 100%;
-        max-width: 100%;
+    .nd-post-row-with-sidebar .nd-post-main-col {
+        flex: 0 0 66.666667%;
+        max-width: 66.666667%;
     }
 
-    .nd-post-sidebar-col:not(:has(.nd-ad-filled)) {
-        display: none !important;
+    .nd-post-row-with-sidebar .nd-post-sidebar-col {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        display: block !important;
     }
 }
 
@@ -76,10 +109,6 @@
     margin-bottom: 0 !important;
 }
 
-.nd-post-sponsored-heading {
-    display: none;
-}
-
-.nd-post-sidebar-col:has(.nd-ad-filled) .nd-post-sponsored-heading {
+.nd-post-row-with-sidebar .nd-post-sponsored-heading {
     display: block;
 }
