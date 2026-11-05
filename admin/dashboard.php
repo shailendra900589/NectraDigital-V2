@@ -374,7 +374,7 @@ admin_layout_start($pageTitles[$page], $page, [
 
         echo "<div class='ge-card mb-4'>
             <h5 class='ge-section-head'>Create New Ad Unit</h5>
-            <p class='text-muted small mb-3'>Sidebar shows up to <strong>20 ad cards</strong> on blog posts. Set placement <strong>Sidebar</strong> for priority. For Google AdSense paste the full code snippet from your dashboard.</p>
+            <p class='text-muted small mb-3'>Blog sidebar shows <strong>one card per active Sidebar ad</strong> (no duplicates). For Google AdSense paste the unit snippet with the <code>&lt;ins class=\"adsbygoogle\"&gt;</code> tag — not the loader script alone. Use placement <strong>Top Banner</strong> or <strong>In-Article</strong> for other slots.</p>
             <form method='POST' enctype='multipart/form-data'>
                 <div class='row g-3'>
                     <div class='col-md-4'><input type='text' name='title' class='form-control' placeholder='Ad Name' required></div>
@@ -388,10 +388,14 @@ admin_layout_start($pageTitles[$page], $page, [
         </div>";
 
         $res = $conn->query("SELECT * FROM ads ORDER BY id DESC");
-        echo "<div class='ge-card'><div class='ge-table-wrap'><table class='table ge-table mb-0'><thead><tr><th>Preview</th><th>Name</th><th>Type</th><th>Placement</th><th>Action</th></tr></thead><tbody>";
+        echo "<div class='ge-card'><div class='ge-table-wrap'><table class='table ge-table mb-0'><thead><tr><th>Preview</th><th>Name</th><th>Type</th><th>Placement</th><th>Live</th><th>Action</th></tr></thead><tbody>";
         while($row = $res->fetch_assoc()){
             $preview = ($row['type'] == 'image' && !empty($row['image_path'])) ? "<img src='../{$row['image_path']}' width='50' height='50' class='ad-preview'>" : "<i class='fas fa-code fa-lg'></i>";
-            echo "<tr><td>$preview</td><td>" . nectra_display_text($row['title']) . "</td><td><span class='badge bg-secondary'>{$row['type']}</span></td><td><span class='badge bg-info'>{$row['placement']}</span></td><td><a href='?page=ads&del_ad={$row['id']}' class='text-danger' onclick='return confirm(\"Delete Ad?\")'>Delete</a></td></tr>";
+            $ok = ad_has_displayable_content($row);
+            $liveBadge = $ok
+                ? "<span class='badge bg-success'>Shows on site</span>"
+                : "<span class='badge bg-warning text-dark' title='Fix image path or paste full AdSense &lt;ins&gt; unit'>Hidden (invalid)</span>";
+            echo "<tr><td>$preview</td><td>" . nectra_display_text($row['title']) . "</td><td><span class='badge bg-secondary'>{$row['type']}</span></td><td><span class='badge bg-info'>{$row['placement']}</span></td><td>$liveBadge</td><td><a href='?page=ads&del_ad={$row['id']}' class='text-danger' onclick='return confirm(\"Delete Ad?\")'>Delete</a></td></tr>";
         }
         echo "</tbody></table></div></div>";
         echo "<script>

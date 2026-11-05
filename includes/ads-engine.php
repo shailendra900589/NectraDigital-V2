@@ -51,17 +51,74 @@ function ad_resolve_image_url(?string $path): string
     return $base . '/' . ltrim($path, '/');
 }
 
+function ad_image_file_available(?string $path): bool
+{
+    $path = trim((string)$path);
+    if ($path === '') {
+        return false;
+    }
+    if (preg_match('#^https?://#i', $path)) {
+        return true;
+    }
+    $root = dirname(__DIR__);
+    $local = $root . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, ltrim($path, '/'));
+    return is_file($local);
+}
+
+/** True when pasted code includes a real ad unit, not loader-only snippets. */
+function ad_code_has_ad_unit(string $code): bool
+{
+    $code = trim($code);
+    if ($code === '') {
+        return false;
+    }
+
+    if (stripos($code, '<ins') !== false && stripos($code, 'adsbygoogle') !== false) {
+        return true;
+    }
+    if (stripos($code, '<iframe') !== false) {
+        return true;
+    }
+
+    // Loader script alone (common bad paste) is not an impression unit.
+    if (stripos($code, 'adsbygoogle.js') !== false && stripos($code, '<ins') === false) {
+        return false;
+    }
+
+    return (bool) preg_match('/<(ins|iframe|embed|object|img)\b/i', $code);
+}
+
+function ad_normalize_ad_code(string $code): string
+{
+    $code = trim($code);
+    if ($code === '') {
+        return '';
+    }
+    // Site loads adsbygoogle.js once in head/footer — strip duplicate loaders from snippets.
+    $code = preg_replace('/<script\b[^>]*\bsrc=["\'][^"\']*adsbygoogle\.js[^"\']*["\'][^>]*>\s*<\/script>/is', '', $code) ?? $code;
+    $code = preg_replace('/<script\b[^>]*\bsrc=["\'][^"\']*adsbygoogle\.js[^"\']*["\'][^>]*\/>/is', '', $code) ?? $code;
+    return trim($code);
+}
+
 function ad_has_displayable_content(array $ad): bool
 {
     $type = strtolower(trim((string)($ad['type'] ?? '')));
     $imagePath = trim((string)($ad['image_path'] ?? ''));
-    $adCode = trim((string)($ad['ad_code'] ?? ''));
+    $adCode = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
 
-    if ($type === 'image' || ($type === '' && $imagePath !== '')) {
-        return $imagePath !== '';
+    if ($type === 'code') {
+        return ad_code_has_ad_unit($adCode);
     }
 
-    return $adCode !== '';
+    if ($type === 'image' || ($type === '' && $imagePath !== '')) {
+        return ad_image_file_available($imagePath);
+    }
+
+    if ($adCode !== '') {
+        return ad_code_has_ad_unit($adCode);
+    }
+
+    return false;
 }
 
 function ad_track_adsense_units(string $html): void
@@ -110,8 +167,8 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
             }
         }
     } else {
-        $code = (string)($ad['ad_code'] ?? '');
-        if (trim($code) !== '') {
+        $code = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
+        if ($code !== '' && ad_code_has_ad_unit($code)) {
             ad_track_adsense_units($code);
             if ($isSidebar) {
                 $html .= '<div class="sidebar-ad-code p-3">' . $code . '</div>';
@@ -197,19 +254,19 @@ function ad_get_active(mysqli $conn, array $placements, int $limit, array $exclu
     return $ads;
 }
 
-/** Active ads with real content only — no duplicate padding to fill slots. */
-function ad_build_sidebar_slots(mysqli $conn, int $max = 12): array
+/**
+ * Sidebar column: only active ads with placement=sidebar that can actually render.
+ * One database row = one sponsored card (no duplication, no header/content spillover).
+ */
+function ad_get_sidebar_displayable(mysqli $conn): array
 {
-    $max = max(1, min(12, $max));
     if (!ads_table_exists($conn)) {
         return [];
     }
 
-    $seen = [];
     $ads = [];
-
-    $candidates = ad_get_active($conn, ['sidebar', 'header', 'content'], $max * 2);
-    foreach ($candidates as $ad) {
+    $seen = [];
+    foreach (ad_get_active($conn, ['sidebar'], 100) as $ad) {
         $id = (int)($ad['id'] ?? 0);
         if ($id > 0 && isset($seen[$id])) {
             continue;
@@ -221,12 +278,14 @@ function ad_build_sidebar_slots(mysqli $conn, int $max = 12): array
             $seen[$id] = true;
         }
         $ads[] = $ad;
-        if (count($ads) >= $max) {
-            break;
-        }
     }
 
     return $ads;
+}
+
+function ad_count_sidebar_displayable(mysqli $conn): int
+{
+    return count(ad_get_sidebar_displayable($conn));
 }
 
 function ad_count_active(mysqli $conn): int
@@ -271,25 +330,22 @@ function ad_count_displayable(mysqli $conn): int
     return $count;
 }
 
-function render_sidebar_ads(mysqli $conn, int $max = 12): int
+function render_sidebar_ads(mysqli $conn): int
 {
-    if (!ads_table_exists($conn)) {
-        return 0;
-    }
-
-    $ads = ad_build_sidebar_slots($conn, $max);
+    $ads = ad_get_sidebar_displayable($conn);
     if (empty($ads)) {
         return 0;
     }
 
-    echo '<div class="sidebar-ad-stack">';
+    echo '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . count($ads) . '">';
     $rendered = 0;
     foreach ($ads as $ad) {
         $html = ad_render_unit($ad, 'sidebar');
-        if ($html !== '') {
-            echo $html;
-            $rendered++;
+        if ($html === '') {
+            continue;
         }
+        echo $html;
+        $rendered++;
     }
     echo '</div>';
 

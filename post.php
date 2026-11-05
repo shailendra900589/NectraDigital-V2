@@ -160,7 +160,7 @@ $header_html = nectra_inject_adsense_head($header_html);
 echo $header_html;
 
 ob_start();
-$sidebar_ad_count = render_sidebar_ads($conn, 12);
+$sidebar_ad_count = render_sidebar_ads($conn);
 $sidebar_ad_html = ob_get_clean();
 $has_sidebar = $sidebar_ad_count > 0;
 $col_class = $has_sidebar ? 'col-lg-8' : 'col-lg-10 mx-auto';
@@ -323,6 +323,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .sidebar-ad-card:hover { border-color: #93C5FD !important; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12); }
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
     .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 90px; }
+    .sidebar-ad-code:not(:has(ins.adsbygoogle)) { min-height: 0; padding: 0 !important; }
 </style>
 
 <main>
