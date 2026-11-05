@@ -18,25 +18,36 @@ function render_breadcrumbs($items, $variant = 'hero') {
     return;
 }
 
-function render_faq_section($faqs, $title = 'Frequently Asked Questions', $theme = 'dark') {
+function render_faq_section($faqs, $title = 'Frequently Asked Questions', $theme = 'dark', $layout = 'page') {
     if (empty($faqs)) return;
     $isLight = ($theme === 'light');
+    $embedded = ($layout === 'embedded');
     $sectionClass = $isLight
-        ? 'py-5 bg-white border-top nd-faq-section nd-faq-section--light'
+        ? 'py-4 nd-faq-section nd-faq-section--light'
         : 'py-5 nd-section-dark border-top nd-faq-section nd-faq-section--dark';
+    if (!$embedded && $isLight) {
+        $sectionClass = 'py-5 bg-white border-top nd-faq-section nd-faq-section--light';
+    }
     $titleClass = $isLight ? 'text-dark' : 'text-white';
     $subClass = $isLight ? 'text-muted' : 'text-white-50';
     $itemClass = $isLight ? 'bg-white border' : 'nd-faq-item-dark';
-    echo '<section class="' . $sectionClass . ' nd-no-section-animate">';
-    echo '<div class="container py-2 py-md-3">';
-    echo '<div class="row justify-content-center"><div class="col-lg-10 col-xl-9">';
-    echo '<div class="text-center mb-4 mb-md-5">';
-    echo '<h2 class="nd-section-title ' . $titleClass . ' mb-2">' . htmlspecialchars($title) . '</h2>';
+    $accordionId = $embedded ? 'postFaqAccordion' : 'faqAccordion';
+
+    if ($embedded) {
+        echo '<div class="nd-post-faq nd-no-section-animate w-100">';
+    } else {
+        echo '<section class="' . $sectionClass . ' nd-no-section-animate">';
+        echo '<div class="container py-2 py-md-3">';
+        echo '<div class="row justify-content-center"><div class="col-lg-10 col-xl-9">';
+    }
+
+    echo '<div class="mb-4 mb-md-5' . ($embedded ? '' : ' text-center') . '">';
+    echo '<h2 class="nd-section-title ' . $titleClass . ' mb-2 h4">' . htmlspecialchars($title) . '</h2>';
     echo '<p class="mb-0 ' . $subClass . ' nd-section-sub">Clear answers to common questions — expand any item below.</p>';
     echo '</div>';
-    echo '<div class="accordion nd-faq-accordion" id="faqAccordion">';
+    echo '<div class="accordion nd-faq-accordion" id="' . $accordionId . '">';
     foreach ($faqs as $i => $faq) {
-        $id = 'faq' . $i;
+        $id = ($embedded ? 'postFaq' : 'faq') . $i;
         $collapsed = ($i > 0 ? ' collapsed' : '');
         $btnClasses = $isLight
             ? 'accordion-button' . $collapsed . ' shadow-none'
@@ -44,10 +55,16 @@ function render_faq_section($faqs, $title = 'Frequently Asked Questions', $theme
         $bodyClass = $isLight ? 'text-secondary' : 'text-white-50';
         echo '<div class="accordion-item ' . $itemClass . '">';
         echo '<h3 class="accordion-header"><button class="' . $btnClasses . '" type="button" data-bs-toggle="collapse" data-bs-target="#' . $id . '" aria-expanded="' . ($i === 0 ? 'true' : 'false') . '">' . htmlspecialchars($faq['q']) . '</button></h3>';
-        echo '<div id="' . $id . '" class="accordion-collapse collapse ' . ($i === 0 ? 'show' : '') . '" data-bs-parent="#faqAccordion">';
+        echo '<div id="' . $id . '" class="accordion-collapse collapse ' . ($i === 0 ? 'show' : '') . '" data-bs-parent="#' . $accordionId . '">';
         echo '<div class="accordion-body ' . $bodyClass . '">' . htmlspecialchars($faq['a']) . '</div></div></div>';
     }
-    echo '</div></div></div></div></section>';
+    echo '</div>';
+
+    if ($embedded) {
+        echo '</div>';
+    } else {
+        echo '</div></div></div></section>';
+    }
     output_faq_schema($faqs);
 }
 
@@ -249,7 +266,7 @@ function render_post_internal_links($conn, $post, $category) {
         $links[] = ['url' => '/digital-agency-' . $city, 'title' => 'Digital Agency ' . ucfirst($city)];
     }
     
-    echo '<section class="nd-post-related py-4 mt-4 border-top">';
+    echo '<section class="nd-post-related py-4 mt-4 border-top w-100">';
     echo '<h3 class="h6 mb-3 text-dark fw-bold"><i class="fas fa-link text-primary me-2"></i>Related Resources</h3>';
     echo '<div class="row g-2">';
     foreach (array_slice($links, 0, 12) as $link) {

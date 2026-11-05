@@ -163,7 +163,7 @@ ob_start();
 $sidebar_ad_count = render_sidebar_ads($conn);
 $sidebar_ad_html = ob_get_clean();
 $has_sidebar = $sidebar_ad_count > 0;
-$col_class = $has_sidebar ? 'col-lg-8' : 'col-lg-10 mx-auto';
+$main_col_class = $has_sidebar ? 'col-lg-8' : 'col-12';
 
 // 7. COMMENT LOGIC
 $msg = "";
@@ -287,7 +287,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     }
     .sidebar-ad-stack { display: flex; flex-direction: column; gap: 1.25rem; width: 100%; }
     .sidebar-ad-column { width: 100%; height: auto; overflow: visible; }
-    .nd-post-related { border-color: #E2E8F0 !important; background: #F8FAFC; border-radius: 12px; padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+    .nd-post-body-full { width: 100%; max-width: none; }
+    .nd-post-related { border-color: #E2E8F0 !important; background: #F8FAFC; border-radius: 12px; padding: 1.25rem 1.5rem !important; }
+    .nd-post-faq { width: 100%; }
     .nd-post-related-link { color: #1E293B; font-weight: 500; }
     .nd-post-related-link:hover { color: #2563EB; }
     .nd-post-section-title { color: #0F172A !important; border-color: #2563EB !important; }
@@ -358,25 +360,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
             <div class="row justify-content-center"><div class="col-12"><?php echo $header_ad_html; ?></div></div>
             <?php endif; ?>
 
-            <div class="row justify-content-center mt-4 align-items-start">
-                <div class="<?php echo $col_class; ?>">
-                    
+            <div class="row mt-4 align-items-start g-4">
+                <div class="<?php echo $main_col_class; ?>">
                     <?php if(!empty($display_img)): ?>
                     <div class="mb-5 rounded overflow-hidden border border-secondary shadow-lg position-relative" style="z-index: 3;">
                         <img src="<?php echo $display_img; ?>" alt="<?php echo nectra_display_text($decoded_title); ?>" class="img-fluid w-100 d-block">
                     </div>
                     <?php endif; ?>
 
-                    <?php 
+                    <?php
                         $content_plain = strip_tags($post['content']);
                         render_geo_blocks($decoded_title, $content_plain);
                     ?>
 
                     <div class="blog-content">
-                        <?php 
+                        <?php
                             $content = nectra_fix_mojibake($post['content']);
                             $ad_html = ad_get_html($conn, 'content', 'banner');
-                            
+
                             if($ad_html !== '') {
                                 $paragraphs = explode('</p>', $content);
                                 if(count($paragraphs) > 2) {
@@ -386,13 +387,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                             } else { echo $content; }
                         ?>
                     </div>
-                    
-                    <?php 
+                </div>
+
+                <?php if ($has_sidebar): ?>
+                <div class="col-lg-4">
+                    <aside class="sidebar-ad-column sticky-lg-top" style="top: 96px;" aria-label="Sponsored content">
+                        <h6 class="text-uppercase small mb-3 border-bottom pb-2 text-center fw-semibold">Sponsored</h6>
+                        <?php echo $sidebar_ad_html; ?>
+                    </aside>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-12 nd-post-body-full">
+                    <?php
                         render_geo_summary($decoded_title);
 
                         $post_faqs = blog_faq_for_post($post);
-                        render_faq_section($post_faqs, 'Article FAQ', 'light');
-                        
+                        render_faq_section($post_faqs, 'Article FAQ', 'light', 'embedded');
+
                         render_post_internal_links($conn, $post, $decoded_category);
                     ?>
 
@@ -438,16 +452,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                         ?>
                     </div>
                 </div>
-
-                <?php if ($has_sidebar): ?>
-                <div class="col-lg-4 mt-5 mt-lg-0 ps-lg-4">
-                    <aside class="sidebar-ad-column" aria-label="Sponsored content">
-                        <h6 class="text-uppercase small mb-3 border-bottom pb-2 text-center fw-semibold">Sponsored</h6>
-                        <?php echo $sidebar_ad_html; ?>
-                    </aside>
-                </div>
-                <?php endif; ?>
-
             </div>
         </div>
 

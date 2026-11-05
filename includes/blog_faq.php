@@ -86,14 +86,15 @@ if (!function_exists('blog_faq_parse_request')) {
 if (!function_exists('blog_faq_defaults')) {
     function blog_faq_defaults(array $post): array
     {
-        if (!defined('FOUNDER_NAME')) {
-            require_once __DIR__ . '/seo-data.php';
+        if (!function_exists('nectra_blog_byline')) {
+            require_once __DIR__ . '/text-utils.php';
         }
         $pub = !empty($post['created_at']) ? date('F j, Y', strtotime($post['created_at'])) : date('F j, Y');
+        $byline = nectra_blog_byline();
         return [
             [
                 'q' => 'Who wrote this article?',
-                'a' => 'This article was authored and verified by ' . FOUNDER_NAME . ', ' . FOUNDER_TITLE . ' at Nectra Digital, with ' . FOUNDER_EXPERIENCE . ' of industry experience.',
+                'a' => 'This article was authored and verified by ' . $byline . ' on the Nectra Digital editorial team.',
             ],
             [
                 'q' => 'Is this information up to date?',
