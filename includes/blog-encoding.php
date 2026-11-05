@@ -22,7 +22,7 @@ function blog_encoding_repair_all(mysqli $conn): int
         $title = blog_encoding_repair_text($row['title'] ?? '');
         $category = blog_encoding_repair_text($row['category'] ?? '');
         $meta = blog_encoding_repair_text($row['meta_description'] ?? '');
-        $content = blog_encoding_repair_text($row['content'] ?? '');
+        $content = nectra_sanitize_blog_html($row['content'] ?? '');
 
         if ($title === ($row['title'] ?? '') && $category === ($row['category'] ?? '')
             && $meta === ($row['meta_description'] ?? '') && $content === ($row['content'] ?? '')) {

@@ -94,6 +94,7 @@ $meta_og_type = (!empty($og_type)) ? $og_type : 'website';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css?v=27">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/content-icons.css?v=1">
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/i18n.css?v=3">
     <script>window.NectraSite = { basePath: <?php echo json_encode(nectra_site_base_path(), JSON_UNESCAPED_UNICODE); ?> };
     window.nectraWebPath = function (p) {

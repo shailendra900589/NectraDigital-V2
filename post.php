@@ -389,7 +389,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                         render_geo_blocks($decoded_title, $content_plain);
                     ?>
 
-                    <div class="blog-content">
+                    <div class="blog-content nd-rich-text">
                         <?php
                             $content = ad_inject_inline_ad_units($sanitized_post_content, $post_inline_ad_units, $inline_ad_paragraph_gap);
                             echo $content;

@@ -96,12 +96,176 @@ function nectra_clean_mojibake_artifacts(string $text): string
     $text = preg_replace('/"\s*Â(?=\s*[a-zA-Z])/u', '" ', $text) ?? $text;
     $text = preg_replace('/(?<=[a-zA-Z0-9])\s*Â(?=\s*[a-zA-Z])/u', ' ', $text) ?? $text;
 
-    // Unrecoverable double-encoded emoji / symbol blobs.
-    $text = preg_replace('/\s*(?:Ã.{1,3}){2,}[^\s<]{0,24}\s*/u', ' ', $text) ?? $text;
     $text = preg_replace('/\x{FFFD}+/u', '', $text) ?? $text;
     $text = preg_replace('/\s{2,}/u', ' ', $text) ?? $text;
 
     return $text;
+}
+
+/** Regex for double/triple-encoded emoji/icon byte sequences in content. */
+function nectra_icon_mojibake_pattern(): string
+{
+    return '/(?:'
+        . '(?:Ã|Ãƒ)(?:°|Â°)?(?:Å|Ã…)?(?:¸|Â¸)?[^\s<]{0,28}'
+        . '|(?:ð|Ã°)(?:Ÿ|Å¸)[^\s<]{0,22}'
+        . '|(?:â|Ã¢)[^\s<]{2,14}'
+        . '|(?:Ã[^\s<]){2,}(?:Â[^\s<]{0,16})+'
+        . ')/u';
+}
+
+function nectra_extract_emoji_from_mojibake(string $blob): string
+{
+    $blob = trim($blob);
+    if ($blob === '') {
+        return '';
+    }
+
+    $candidates = [$blob];
+    $cur = $blob;
+
+    for ($pass = 0; $pass < 5; $pass++) {
+        foreach (['Windows-1252', 'ISO-8859-1'] as $enc) {
+            $attempt = @mb_convert_encoding($cur, 'UTF-8', $enc);
+            if (!is_string($attempt) || $attempt === '' || !mb_check_encoding($attempt, 'UTF-8')) {
+                continue;
+            }
+            $candidates[] = $attempt;
+            if (preg_match('/\p{Extended_Pictographic}/u', $attempt, $m)) {
+                return $m[0];
+            }
+            $cur = $attempt;
+        }
+
+        if (function_exists('iconv')) {
+            $latin = @iconv('UTF-8', 'ISO-8859-1//IGNORE', $cur);
+            if (is_string($latin) && $latin !== '') {
+                $attempt = @iconv('ISO-8859-1', 'UTF-8//IGNORE', $latin);
+                if (is_string($attempt) && $attempt !== '') {
+                    $candidates[] = $attempt;
+                    if (preg_match('/\p{Extended_Pictographic}/u', $attempt, $m)) {
+                        return $m[0];
+                    }
+                }
+            }
+        }
+    }
+
+    foreach ($candidates as $candidate) {
+        if (preg_match('/\p{Extended_Pictographic}/u', $candidate, $m)) {
+            return $m[0];
+        }
+    }
+
+    return '';
+}
+
+function nectra_icon_html_from_context(string $afterText): string
+{
+    $ctx = strtolower($afterText);
+    if (str_contains($ctx, 'whatsapp') || str_contains($ctx, 'wa.me')) {
+        return '<i class="fab fa-whatsapp nd-txt-icon nd-txt-icon--wa" aria-hidden="true"></i>';
+    }
+    if (str_contains($ctx, 'learn') || str_contains($ctx, 'journey') || str_contains($ctx, 'shuru')) {
+        return '<i class="fas fa-rocket nd-txt-icon nd-txt-icon--accent" aria-hidden="true"></i>';
+    }
+    if (str_contains($ctx, 'click here') || str_contains($ctx, 'talk to')) {
+        return '<i class="fas fa-comment-dots nd-txt-icon nd-txt-icon--accent" aria-hidden="true"></i>';
+    }
+    if (str_contains($ctx, 'revenue') || str_contains($ctx, 'roi') || str_contains($ctx, 'growth')) {
+        return '<i class="fas fa-chart-line nd-txt-icon nd-txt-icon--accent" aria-hidden="true"></i>';
+    }
+    return '<i class="fas fa-circle-check nd-txt-icon nd-txt-icon--accent" aria-hidden="true"></i>';
+}
+
+function nectra_icon_html_for_emoji(string $emoji, string $afterText = ''): string
+{
+    $ctx = strtolower($afterText);
+    if ($emoji === '💬' || $emoji === '📱' || $emoji === '📲'
+        || str_contains($ctx, 'whatsapp') || str_contains($ctx, 'wa.me')) {
+        return '<i class="fab fa-whatsapp nd-txt-icon nd-txt-icon--wa" aria-hidden="true"></i>';
+    }
+
+    static $map = [
+        '🚀' => 'fa-rocket',
+        '💡' => 'fa-lightbulb',
+        '✅' => 'fa-circle-check',
+        '✔' => 'fa-check',
+        '☑' => 'fa-check-square',
+        '📈' => 'fa-chart-line',
+        '💰' => 'fa-coins',
+        '💼' => 'fa-briefcase',
+        '🎯' => 'fa-bullseye',
+        '🔥' => 'fa-fire',
+        '⭐' => 'fa-star',
+        '🌟' => 'fa-star',
+        '👉' => 'fa-hand-point-right',
+        '👇' => 'fa-hand-point-down',
+        '👆' => 'fa-hand-point-up',
+        '👋' => 'fa-hand',
+        '📞' => 'fa-phone',
+        '☎' => 'fa-phone',
+        '💬' => 'fa-comment-dots',
+        '📱' => 'fa-mobile-screen',
+        '📲' => 'fa-mobile-screen-button',
+        '🛒' => 'fa-cart-shopping',
+        '🎓' => 'fa-graduation-cap',
+        '🔗' => 'fa-link',
+        '⚡' => 'fa-bolt',
+        '🏆' => 'fa-trophy',
+    ];
+
+    $icon = $map[$emoji] ?? 'fa-circle-check';
+    return '<i class="fas ' . $icon . ' nd-txt-icon nd-txt-icon--accent" aria-hidden="true"></i>';
+}
+
+/** Turn broken emoji byte blobs into Unicode (plain text) or remove garbage. */
+function nectra_repair_icon_blobs_to_unicode(string $text): string
+{
+    $pattern = nectra_icon_mojibake_pattern();
+    return preg_replace_callback(
+        $pattern,
+        static function (array $m): string {
+            $blob = $m[0];
+            $emoji = nectra_extract_emoji_from_mojibake($blob);
+            if ($emoji !== '') {
+                return $emoji . ' ';
+            }
+            return ' ';
+        },
+        $text
+    ) ?? $text;
+}
+
+/** Replace broken blobs + Unicode emojis with Font Awesome icons (HTML content only). */
+function nectra_apply_inline_icons_to_html(string $html): string
+{
+    if ($html === '') {
+        return '';
+    }
+
+    $pattern = nectra_icon_mojibake_pattern();
+    $html = preg_replace_callback(
+        $pattern,
+        static function (array $m) use ($html): string {
+            $blob = $m[0];
+            $pos = strpos($html, $blob);
+            $after = $pos !== false ? substr($html, $pos + strlen($blob), 120) : '';
+            $emoji = nectra_extract_emoji_from_mojibake($blob);
+            if ($emoji !== '') {
+                return nectra_icon_html_for_emoji($emoji, strip_tags($after));
+            }
+            return nectra_icon_html_from_context(strip_tags($after));
+        },
+        $html
+    ) ?? $html;
+
+    return preg_replace_callback(
+        '/\p{Extended_Pictographic}/u',
+        static function (array $m): string {
+            return nectra_icon_html_for_emoji($m[0], '');
+        },
+        $html
+    ) ?? $html;
 }
 
 function nectra_fix_mojibake(?string $text): string
@@ -113,8 +277,10 @@ function nectra_fix_mojibake(?string $text): string
     $text = nectra_decode_entities($text);
     $text = nectra_repair_utf8_layers($text);
     $text = nectra_clean_mojibake_artifacts($text);
+    $text = nectra_repair_icon_blobs_to_unicode($text);
 
     $text = preg_replace('/Letâ[\x00-\xFF]{0,3}s/u', "Let's", $text) ?? $text;
+    $text = preg_replace('/\s{2,}/u', ' ', $text) ?? $text;
 
     return trim($text);
 }
@@ -127,6 +293,7 @@ function nectra_sanitize_blog_html(?string $html): string
     }
 
     $html = nectra_fix_mojibake($html);
+    $html = nectra_apply_inline_icons_to_html($html);
 
     if (!mb_check_encoding($html, 'UTF-8')) {
         $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');

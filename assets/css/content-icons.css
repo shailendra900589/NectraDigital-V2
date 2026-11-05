@@ -1,0 +1,23 @@
+/* Inline Font Awesome replacements for emojis / fixed mojibake (blog & rich content). */
+.blog-content .nd-txt-icon,
+.nd-rich-text .nd-txt-icon,
+article .nd-txt-icon {
+    display: inline-block;
+    vertical-align: -0.12em;
+    margin-right: 0.28rem;
+    font-size: 1.05em;
+    line-height: 1;
+}
+
+.nd-txt-icon--accent {
+    color: #2563eb;
+}
+
+.nd-txt-icon--wa {
+    color: #25d366;
+}
+
+.blog-content a .nd-txt-icon,
+.blog-content a .fab.fa-whatsapp {
+    text-decoration: none;
+}
