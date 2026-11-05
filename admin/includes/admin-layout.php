@@ -58,7 +58,7 @@ function admin_layout_start(string $title, string $activePage = '', array $optio
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo htmlspecialchars($ctx['assets']); ?>css/growth-admin.css?v=9">
+    <link rel="stylesheet" href="<?php echo htmlspecialchars($ctx['assets']); ?>css/growth-admin.css?v=10">
     <?php if ($includeCkeditor): ?>
         <?php require_once dirname(__DIR__, 2) . '/includes/ckeditor.php'; nectra_ckeditor_styles(); ?>
     <?php endif; ?>
@@ -135,7 +135,7 @@ function admin_layout_start(string $title, string $activePage = '', array $optio
             <?php if ($showGrowthWarning && $growthReady === false && $activePage !== 'home'): ?>
             <div class="alert alert-warning alert-dismissible fade show">
                 <strong>Growth database not ready.</strong>
-                Run <a href="<?php echo htmlspecialchars($ctx['root']); ?>../database/migrate.php" target="_blank" class="alert-link">database/migrate.php</a> once to enable cities and landing pages.
+                Run <a href="<?php echo htmlspecialchars($ctx['root']); ?>run-migration.php" class="alert-link">Database migration</a> once to enable cities and landing pages.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <?php endif; ?>

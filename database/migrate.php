@@ -2,20 +2,23 @@
 /**
  * Run database migrations (v1 + v2)
  * CLI: php database/migrate.php
+ * Web: blocked by .htaccess — use admin/run-migration.php when logged in.
  */
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
-echo "Nectra Digital — Migration starting...\n";
-
 if (php_sapi_name() !== 'cli') {
-    header('Content-Type: text/plain; charset=utf-8');
+    header('Content-Type: text/plain; charset=utf-8', true, 403);
+    echo "Forbidden. Run from CLI (php database/migrate.php) or use Admin → Run migration.\n";
+    exit;
 }
+
+echo "Nectra Digital — Migration starting...\n";
 
 try {
     require_once __DIR__ . '/../includes/db.php';
 } catch (Throwable $e) {
-    die("DB load failed: " . $e->getMessage() . "\n");
+    die('DB load failed: ' . $e->getMessage() . "\n");
 }
 
 if (!isset($conn) || !($conn instanceof mysqli)) {
@@ -23,83 +26,11 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
 }
 
 if ($conn->connect_error) {
-    die("Connection Failed: " . $conn->connect_error . "\n");
+    die('Connection Failed: ' . $conn->connect_error . "\n");
 }
 
-echo "DB connected OK\n\n";
-
-function ge_migration_skip_error(string $err): bool
-{
-    $needles = [
-        'Duplicate', 'already exists', "Can't DROP", 'check that it exists',
-        'Unknown column', 'Duplicate column', 'Duplicate key name',
-        'Multiple primary key', 'Duplicate entry',
-    ];
-    foreach ($needles as $needle) {
-        if (stripos($err, $needle) !== false) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function run_sql_file(mysqli $conn, string $path): array {
-    if (!file_exists($path)) {
-        return ['ok' => 0, 'fail' => 0, 'msg' => "Missing: $path\n"];
-    }
-    $sql = file_get_contents($path);
-    $sql = preg_replace('/^--.*$/m', '', $sql);
-    $statements = array_filter(array_map('trim', explode(';', $sql)));
-    $ok = 0;
-    $fail = 0;
-    $out = "=== " . basename($path) . " ===\n";
-    foreach ($statements as $statement) {
-        if (strlen($statement) < 5) continue;
-        try {
-            if ($conn->query($statement)) {
-                $ok++;
-                if (preg_match('/CREATE TABLE.*?(\w+)/i', $statement, $m)) {
-                    $out .= "OK: Table {$m[1]}\n";
-                }
-            } else {
-                $err = $conn->error;
-                if (ge_migration_skip_error($err)) {
-                    $ok++;
-                    $out .= "SKIP: " . substr($statement, 0, 50) . "... ($err)\n";
-                } else {
-                    $fail++;
-                    $out .= "FAIL: $err\n  " . substr($statement, 0, 80) . "...\n";
-                }
-            }
-        } catch (mysqli_sql_exception $e) {
-            $err = $e->getMessage();
-            if (ge_migration_skip_error($err)) {
-                $ok++;
-                $out .= "SKIP: " . substr($statement, 0, 50) . "... ($err)\n";
-            } else {
-                $fail++;
-                $out .= "FAIL: $err\n  " . substr($statement, 0, 80) . "...\n";
-            }
-        }
-    }
-    $out .= "Done: $ok ok, $fail failed\n\n";
-    return ['ok' => $ok, 'fail' => $fail, 'msg' => $out];
-}
-
-$r1 = run_sql_file($conn, __DIR__ . '/schema.sql');
-$r2 = run_sql_file($conn, __DIR__ . '/schema-v2.sql');
-
-echo $r1['msg'] . $r2['msg'];
-echo "Total: " . ($r1['ok'] + $r2['ok']) . " ok, " . ($r1['fail'] + $r2['fail']) . " failed\n";
-
-if (file_exists(__DIR__ . '/../includes/growth/bootstrap.php')) {
-    require_once __DIR__ . '/../includes/growth/bootstrap.php';
-    if (function_exists('ge_is_ready') && ge_is_ready()) {
-        require_once __DIR__ . '/../includes/growth/engines/CatalogSyncEngine.php';
-        $sync = \Growth\Engines\CatalogSyncEngine::syncAll();
-        echo "\nCatalog sync: {$sync['services']} services, {$sync['cities']} cities\n";
-        echo "Run: php database/generate-all-pages.php — to create all service × city landing pages\n";
-    }
-}
-
-echo "Admin: https://www.nectradigital.com/admin/growth/\n";
+require_once __DIR__ . '/../includes/db-migrate.php';
+$result = nectra_run_database_migrations($conn);
+echo $result['log'];
+echo "\nAdmin: https://www.nectradigital.com/admin/growth/\n";
+exit($result['fail_count'] > 0 ? 1 : 0);

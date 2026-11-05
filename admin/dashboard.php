@@ -494,47 +494,61 @@ admin_layout_start($pageTitles[$page], $page, [
         $sql = "SELECT * FROM hire_requests ORDER BY created_at DESC";
         $result = $conn->query($sql);
 
-        echo '<div class="ge-card"><div class="ge-table-wrap"><table class="table ge-table table-hover align-middle mb-0">
-                <thead><tr><th>Date</th><th>Client Info</th><th>Service & Budget</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
-        
-        if($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
+        echo '<div class="ge-card"><div class="ge-table-wrap"><table class="table ge-table ge-table-inbox table-hover align-top mb-0">
+                <thead><tr>
+                    <th class="col-date">Date</th>
+                    <th class="col-contact">Client Info</th>
+                    <th class="col-service">Service & Budget</th>
+                    <th class="col-status">Status</th>
+                    <th class="col-actions text-end">Actions</th>
+                </tr></thead><tbody>';
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $hid = (int)$row['id'];
+                $status = (string)($row['status'] ?? 'new');
+                $statusClass = $status === 'closed' ? 'ge-badge-failed' : ($status === 'contacted' ? 'ge-badge-pending' : 'ge-badge-indexed');
+                $statusLabel = ucfirst($status);
                 echo "<tr>
-                        <td><small class='text-white-50'>".date('M d, Y', strtotime($row['created_at']))."</small></td>
-                        <td>
-                            <strong class='text-white'>".htmlspecialchars($row['full_name'])."</strong><br>
-                            <a href='mailto:".htmlspecialchars($row['email'])."' class='small text-info text-decoration-none'>".htmlspecialchars($row['email'])."</a><br>
-                            <a href='https://wa.me/".preg_replace('/[^0-9]/', '', $row['phone'])."' target='_blank' class='small text-success text-decoration-none'><i class='fab fa-whatsapp'></i> ".htmlspecialchars($row['phone'])."</a>
+                        <td class='small text-nowrap ge-cell-date'><strong>" . date('M d, Y', strtotime($row['created_at'])) . "</strong></td>
+                        <td class='ge-cell-contact'>
+                            <strong>" . htmlspecialchars($row['full_name']) . "</strong><br>
+                            <a href='mailto:" . htmlspecialchars($row['email']) . "' class='small ge-link-mail text-decoration-none'>" . htmlspecialchars($row['email']) . "</a><br>
+                            <a href='https://wa.me/" . preg_replace('/[^0-9]/', '', $row['phone']) . "' target='_blank' rel='noopener' class='small ge-link-wa text-decoration-none'><i class='fab fa-whatsapp'></i> " . htmlspecialchars($row['phone']) . "</a>
                         </td>
-                        <td>
-                            <span class='badge bg-secondary'>".htmlspecialchars($row['service_needed'])."</span><br>
-                            <small class='text-white-50'>Budget: ".htmlspecialchars($row['budget'])."</small>
+                        <td class='ge-cell-service'>
+                            <span class='badge bg-secondary ge-service-badge'>" . htmlspecialchars($row['service_needed']) . "</span>
+                            <div class='small text-muted mt-1'>Budget: " . htmlspecialchars($row['budget']) . "</div>
                         </td>
-                        <td>
-                            <form method='POST' class='d-inline-block'>
-                                <input type='hidden' name='request_id' value='{$row['id']}'>
+                        <td class='ge-cell-status'>
+                            <span class='ge-badge {$statusClass} mb-2 d-inline-block'>{$statusLabel}</span>
+                            <form method='POST' class='ge-status-form'>
+                                <input type='hidden' name='request_id' value='{$hid}'>
                                 <input type='hidden' name='update_hire_status' value='1'>
-                                <select name='status' class='form-select form-select-sm d-inline-block w-auto bg-dark text-white border-secondary' onchange='this.form.submit()'>
-                                    <option value='new' ".($row['status'] == 'new' ? 'selected' : '').">New</option>
-                                    <option value='contacted' ".($row['status'] == 'contacted' ? 'selected' : '').">Contacted</option>
-                                    <option value='closed' ".($row['status'] == 'closed' ? 'selected' : '').">Closed</option>
+                                <label class='visually-hidden' for='hire-status-{$hid}'>Update status</label>
+                                <select id='hire-status-{$hid}' name='status' class='form-select form-select-sm ge-status-select' onchange='this.form.submit()'>
+                                    <option value='new' " . ($status === 'new' ? 'selected' : '') . ">New</option>
+                                    <option value='contacted' " . ($status === 'contacted' ? 'selected' : '') . ">Contacted</option>
+                                    <option value='closed' " . ($status === 'closed' ? 'selected' : '') . ">Closed</option>
                                 </select>
                             </form>
                         </td>
-                        <td>
-                            <button class='btn btn-sm btn-outline-info' onclick='toggleDetails({$row['id']})'><i class='fas fa-eye'></i> View</button>
-                            <a href='?page=hire_requests&del_hire={$row['id']}' class='btn btn-sm btn-outline-danger ms-1' onclick='return confirm(\"Delete this lead?\")'><i class='fas fa-trash'></i></a>
+                        <td class='text-end ge-cell-actions'>
+                            <div class='ge-action-group'>
+                                <button type='button' class='btn btn-sm btn-outline-secondary' onclick='toggleDetails({$hid})' title='View project details'><i class='fas fa-eye'></i><span class='d-none d-xl-inline ms-1'>View</span></button>
+                                <a href='?page=hire_requests&del_hire={$hid}' class='btn btn-sm btn-outline-danger' onclick='return confirm(\"Delete this request?\")' title='Delete'><i class='fas fa-trash'></i></a>
+                            </div>
                         </td>
                       </tr>
-                      <tr id='details-{$row['id']}' class='ge-detail-row' style='display:none;'>
-                          <td colspan='5' class='p-3 border-bottom border-secondary'>
-                              <h6 class='text-info mb-2'>Project Details</h6>
-                              <p class='mb-0 text-white-50 small' style='white-space: pre-wrap;'>".htmlspecialchars($row['project_details'])."</p>
+                      <tr id='details-{$hid}' class='ge-detail-row' style='display:none;'>
+                          <td colspan='5' class='p-4'>
+                              <h6 class='mb-2'>Project details</h6>
+                              <p class='mb-0 text-muted small ge-detail-body'>" . nl2br(htmlspecialchars((string)$row['project_details'])) . "</p>
                           </td>
                       </tr>";
             }
         } else {
-            echo "<tr><td colspan='5' class='text-center py-4 text-white-50'>No hire requests found.</td></tr>";
+            echo "<tr><td colspan='5' class='text-center py-5 text-muted'>No hire requests found.</td></tr>";
         }
         echo '</tbody></table></div></div>';
     }
@@ -608,10 +622,11 @@ admin_layout_start($pageTitles[$page], $page, [
         echo '<button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm(\'Delete all selected leads?\')"><i class="fas fa-trash"></i> Delete Selected</button>';
         echo '</div>';
 
-        echo '<div class="ge-card"><div class="ge-table-wrap"><table class="table ge-table table-hover align-middle mb-0">';
+        echo '<div class="ge-card"><div class="ge-table-wrap"><table class="table ge-table ge-table-inbox table-hover align-top mb-0">';
         echo '<thead><tr>';
-        echo '<th style="width:36px;"><input type="checkbox" class="form-check-input" id="leadSelectAll" title="Select all"></th>';
-        echo '<th>Date</th><th>Status</th><th>Contact</th><th>Service & Budget</th><th>Message</th><th class="text-end">Actions</th>';
+        echo '<th class="col-check"><input type="checkbox" class="form-check-input" id="leadSelectAll" title="Select all"></th>';
+        echo '<th class="col-date">Date</th><th class="col-status">Status</th><th class="col-contact">Contact</th>';
+        echo '<th class="col-service">Service & Budget</th><th class="col-message">Message</th><th class="col-actions text-end">Actions</th>';
         echo '</tr></thead><tbody>';
 
         if ($result && $result->num_rows > 0) {
@@ -630,32 +645,38 @@ admin_layout_start($pageTitles[$page], $page, [
                     ? '<span class="ge-badge ge-badge-failed">Spam</span>'
                     : '<span class="ge-badge ge-badge-indexed">Clean</span>';
 
+                $msgPreview = mb_strlen(strip_tags($row['message'])) > 220
+                    ? mb_substr(strip_tags($row['message']), 0, 220) . '…'
+                    : $message;
+
                 echo "<tr>
-                    <td><input type='checkbox' class='form-check-input lead-row-check' name='lead_ids[]' value='{$id}'></td>
-                    <td class='small text-nowrap'><strong>{$date}</strong>" . ($time ? "<br><span class='text-muted'>{$time}</span>" : '') . "</td>
-                    <td>{$statusBadge}</td>
-                    <td>
+                    <td class='align-middle'><input type='checkbox' class='form-check-input lead-row-check' name='lead_ids[]' value='{$id}'></td>
+                    <td class='small text-nowrap ge-cell-date'><strong>{$date}</strong>" . ($time ? "<br><span class='text-muted'>{$time}</span>" : '') . "</td>
+                    <td class='align-middle'>{$statusBadge}</td>
+                    <td class='ge-cell-contact'>
                         <strong>{$name}</strong><br>
-                        <a href='mailto:{$email}' class='small text-info text-decoration-none'>{$email}</a><br>
-                        <span class='small text-muted'>IP: {$ip}</span>
+                        <a href='mailto:{$email}' class='small ge-link-mail text-decoration-none'>{$email}</a><br>
+                        <span class='small ge-ip-label'>IP {$ip}</span>
                     </td>
-                    <td>
-                        <span class='badge bg-secondary'>{$service}</span>" .
-                        ($budget !== '' ? "<br><small class='text-muted'>Budget: {$budget}</small>" : '') . "
+                    <td class='ge-cell-service'>
+                        <span class='badge bg-secondary ge-service-badge'>{$service}</span>" .
+                        ($budget !== '' ? "<div class='small text-muted mt-1'>Budget: {$budget}</div>" : '') . "
                     </td>
-                    <td class='small' style='max-width:280px;'>
-                        <div class='lead-msg-preview text-muted'>" . nl2br($message) . "</div>
+                    <td class='ge-cell-message'>
+                        <div class='lead-msg-preview text-muted small'>" . nl2br($msgPreview) . "</div>
                     </td>
-                    <td class='text-end text-nowrap'>
-                        <button type='button' class='btn btn-sm btn-outline-info' onclick='toggleDetails({$id})' title='View full message'><i class='fas fa-eye'></i></button>
-                        <a href='mailto:{$email}?subject=" . rawurlencode('Re: Your inquiry — Nectra Digital') . "' class='btn btn-sm btn-outline-secondary' title='Reply'><i class='fas fa-reply'></i></a>
-                        <a href='?page=leads&del_lead={$id}' class='btn btn-sm btn-outline-danger' onclick='return confirm(\"Delete this lead?\")' title='Delete'><i class='fas fa-trash'></i></a>
+                    <td class='text-end ge-cell-actions'>
+                        <div class='ge-action-group'>
+                            <button type='button' class='btn btn-sm btn-outline-secondary' onclick='toggleDetails({$id})' title='View full message'><i class='fas fa-eye'></i></button>
+                            <a href='mailto:{$email}?subject=" . rawurlencode('Re: Your inquiry — Nectra Digital') . "' class='btn btn-sm btn-outline-secondary' title='Reply'><i class='fas fa-reply'></i></a>
+                            <a href='?page=leads&del_lead={$id}' class='btn btn-sm btn-outline-danger' onclick='return confirm(\"Delete this lead?\")' title='Delete'><i class='fas fa-trash'></i></a>
+                        </div>
                     </td>
                 </tr>
-                <tr id='details-{$id}' style='display:none;'>
-                    <td colspan='7' class='p-3 border-top border-secondary'>
-                        <h6 class='text-info mb-2'>Full Message</h6>
-                        <p class='mb-2 text-muted small' style='white-space:pre-wrap;'>{$message}</p>
+                <tr id='details-{$id}' class='ge-detail-row' style='display:none;'>
+                    <td colspan='7' class='p-4'>
+                        <h6 class='mb-2'>Full message</h6>
+                        <p class='mb-3 text-muted small ge-detail-body' style='white-space:pre-wrap;'>{$message}</p>
                         <div class='d-flex flex-wrap gap-2'>
                             <a href='mailto:{$email}' class='btn btn-sm btn-ge-primary'><i class='fas fa-envelope me-1'></i> Email {$name}</a>
                             <a href='?page=leads&del_lead={$id}' class='btn btn-sm btn-outline-danger' onclick='return confirm(\"Delete this lead?\")'><i class='fas fa-trash me-1'></i> Delete</a>

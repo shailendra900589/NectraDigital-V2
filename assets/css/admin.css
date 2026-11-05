@@ -556,6 +556,123 @@ body.ge-admin,
     border-radius: 10px;
 }
 
+/* Inbox tables (Contact Leads, Hire Requests) */
+.ge-table-inbox tbody td {
+    vertical-align: top;
+}
+
+.ge-table-inbox .col-check {
+    width: 2.25rem;
+}
+
+.ge-table-inbox .col-date {
+    width: 7.5rem;
+}
+
+.ge-table-inbox .col-status {
+    width: 8.5rem;
+}
+
+.ge-table-inbox .col-service {
+    width: 11rem;
+    min-width: 9rem;
+}
+
+.ge-table-inbox .col-message {
+    min-width: 12rem;
+    max-width: 22rem;
+}
+
+.ge-table-inbox .col-actions {
+    width: 7.5rem;
+}
+
+.ge-cell-contact strong {
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.ge-link-mail {
+    color: var(--nd-admin-accent) !important;
+}
+
+.ge-link-mail:hover {
+    color: var(--nd-admin-accent-hover) !important;
+}
+
+.ge-link-wa {
+    color: #059669 !important;
+}
+
+.ge-ip-label {
+    color: var(--nd-admin-text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+}
+
+.ge-service-badge {
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: none;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.35;
+}
+
+.lead-msg-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.45;
+    max-width: 28rem;
+}
+
+.ge-action-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.35rem;
+}
+
+.ge-status-select {
+    min-width: 8.5rem;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.ge-status-form {
+    margin: 0;
+}
+
+.ge-detail-body {
+    line-height: 1.55;
+    max-width: 52rem;
+}
+
+.ge-migration-log {
+    background: var(--nd-admin-surface-alt);
+    border: 1px solid var(--nd-admin-border);
+    border-radius: 8px;
+    padding: 1rem 1.15rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    max-height: 28rem;
+    overflow: auto;
+    color: var(--nd-admin-text);
+}
+
+/* Native select dropdown readability (light + dark theme) */
+.ge-admin select option {
+    background-color: var(--nd-admin-surface);
+    color: var(--nd-admin-text);
+}
+
+[data-theme="dark"] .ge-admin select option {
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
 /* Login */
 .ge-login-shell {
     min-height: 100vh;

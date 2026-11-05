@@ -110,7 +110,7 @@ ge_admin_layout_start('Settings', 'settings');
 <div class="ge-card mt-4">
     <h2 class="h6 mb-3">Database Migration</h2>
     <p class="text-muted small">Run once to create Growth Engine tables.</p>
-    <a href="../../database/migrate.php" target="_blank" class="btn btn-outline-secondary">Run Migration</a>
+    <a href="../run-migration.php" class="btn btn-outline-secondary">Run Migration</a>
 </div>
 
 <div class="ge-card mt-4">

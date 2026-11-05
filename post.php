@@ -159,11 +159,14 @@ if (ads_has_code_units($conn)) {
 $header_html = nectra_inject_adsense_head($header_html);
 echo $header_html;
 
-ob_start();
-$sidebar_ad_count = render_sidebar_ads($conn);
-$sidebar_ad_html = ob_get_clean();
+$adPlan = ad_prepare_post_page_ads($conn);
+$sidebar_ad_html = $adPlan['sidebar_html'];
+$sidebar_ad_count = $adPlan['sidebar_count'];
+$post_inline_ad_units = $adPlan['inline_units'];
+$post_header_ad_html = $adPlan['header_html'];
 $has_sidebar = $sidebar_ad_count > 0;
-$main_col_class = $has_sidebar ? 'col-lg-8' : 'col-12';
+$main_col_class = $has_sidebar ? 'col-lg-8 nd-post-main-col' : 'col-12 nd-post-main-col';
+$GLOBALS['nectra_ads_prune_script'] = true;
 
 // 7. COMMENT LOGIC
 $msg = "";
@@ -324,9 +327,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .sidebar-ad-code { color: #334155; font-size: 0.875rem; overflow: hidden; min-height: 0; background: #F8FAFC; }
     .sidebar-ad-card:hover { border-color: #93C5FD !important; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12); }
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
-    .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 90px; }
-    .sidebar-ad-code:not(:has(ins.adsbygoogle)) { min-height: 0; padding: 0 !important; }
+    .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 0; }
 </style>
+<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=1">
 
 <main>
     <header class="post-hero-header text-center">
@@ -354,10 +357,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     <article class="py-5">
         <div class="container">
             <?php
-            $header_ad_html = ad_get_html($conn, 'header', 'banner');
-            if ($header_ad_html !== ''):
+            if ($post_header_ad_html !== ''):
             ?>
-            <div class="row justify-content-center"><div class="col-12"><?php echo $header_ad_html; ?></div></div>
+            <div class="row justify-content-center"><div class="col-12"><?php echo $post_header_ad_html; ?></div></div>
             <?php endif; ?>
 
             <div class="row mt-4 align-items-start g-4">
@@ -376,23 +378,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                     <div class="blog-content">
                         <?php
                             $content = nectra_sanitize_blog_html($post['content']);
-                            $ad_html = ad_get_html($conn, 'content', 'banner');
-
-                            if($ad_html !== '') {
-                                $paragraphs = explode('</p>', $content);
-                                if(count($paragraphs) > 2) {
-                                    array_splice($paragraphs, 2, 0, $ad_html);
-                                    echo implode('</p>', $paragraphs);
-                                } else { echo $content . $ad_html; }
-                            } else { echo $content; }
+                            $content = ad_inject_inline_ad_units($content, $post_inline_ad_units);
+                            echo $content;
                         ?>
                     </div>
                 </div>
 
                 <?php if ($has_sidebar): ?>
-                <div class="col-lg-4">
+                <div class="col-lg-4 nd-post-sidebar-col">
                     <aside class="sidebar-ad-column sticky-lg-top" style="top: 96px;" aria-label="Sponsored content">
-                        <h6 class="text-uppercase small mb-3 border-bottom pb-2 text-center fw-semibold">Sponsored</h6>
+                        <h6 class="text-uppercase small mb-3 border-bottom pb-2 text-center fw-semibold nd-post-sponsored-heading">Sponsored</h6>
                         <?php echo $sidebar_ad_html; ?>
                     </aside>
                 </div>
@@ -502,4 +497,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     </article>
 </main>
 
+<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=1" defer></script>
 <?php include 'includes/footer.php'; ?>

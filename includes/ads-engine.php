@@ -134,6 +134,50 @@ function ad_track_adsense_units(string $html): void
     $GLOBALS['nectra_adsense_needs_loader'] = true;
 }
 
+function ad_fingerprint(array $ad): string
+{
+    $type = strtolower(trim((string)($ad['type'] ?? '')));
+    $imagePath = trim((string)($ad['image_path'] ?? ''));
+    if ($type === 'image' || ($type === '' && $imagePath !== '')) {
+        return 'img:' . $imagePath;
+    }
+    return 'code:' . md5(ad_normalize_ad_code((string)($ad['ad_code'] ?? '')));
+}
+
+/** Drop duplicate DB rows that share the same image or AdSense snippet. */
+function ad_dedupe_ads(array $ads): array
+{
+    $seen = [];
+    $out = [];
+    foreach ($ads as $ad) {
+        $fp = ad_fingerprint($ad);
+        if (isset($seen[$fp])) {
+            continue;
+        }
+        $seen[$fp] = true;
+        $out[] = $ad;
+    }
+    return $out;
+}
+
+function ad_slot_open(array $ad, string $variant): string
+{
+    $id = (int)($ad['id'] ?? 0);
+    $type = strtolower(trim((string)($ad['type'] ?? 'image')));
+    $data = ' data-nd-ad-id="' . $id . '" data-nd-ad-type="' . htmlspecialchars($type, ENT_QUOTES, 'UTF-8') . '"';
+
+    if ($variant === 'sidebar') {
+        return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm nd-ad-slot nd-ad-pending"' . $data . '>'
+            . '<span class="badge bg-secondary sidebar-ad-badge nd-ad-badge">Sponsored</span>';
+    }
+    if ($variant === 'inline' || $variant === 'banner-light') {
+        return '<div class="nd-inline-ad-card border rounded bg-white shadow-sm my-4 nd-ad-slot nd-ad-pending"' . $data . '>'
+            . '<span class="badge bg-secondary nd-ad-badge nd-inline-ad-badge">Sponsored</span>';
+    }
+
+    return '<div class="ad-container my-5 position-relative p-3 border border-secondary rounded nd-ad-slot nd-ad-pending"' . $data . '>';
+}
+
 function ad_render_unit(array $ad, string $variant = 'banner'): string
 {
     if (!ad_has_displayable_content($ad)) {
@@ -141,6 +185,7 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
     }
 
     $isSidebar = ($variant === 'sidebar');
+    $isInline = ($variant === 'inline' || $variant === 'banner-light');
     $html = '';
     $type = strtolower(trim((string)($ad['type'] ?? '')));
     $isImageAd = ($type === 'image' || ($type === '' && trim($ad['image_path'] ?? '') !== ''));
@@ -155,14 +200,14 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
         if ($adImg !== '') {
             if ($isSidebar) {
                 $html .= '<a href="' . $link . '" target="_blank" rel="noopener sponsored" class="sidebar-ad-link d-block text-decoration-none">';
-                $html .= '<div class="sidebar-ad-img-wrap"><img src="' . htmlspecialchars($adImg, ENT_QUOTES, 'UTF-8') . '" alt="' . $title . '" class="sidebar-ad-img" loading="lazy"></div>';
+                $html .= '<div class="sidebar-ad-img-wrap"><img src="' . htmlspecialchars($adImg, ENT_QUOTES, 'UTF-8') . '" alt="' . $title . '" class="sidebar-ad-img nd-ad-img" loading="lazy" decoding="async"></div>';
                 if ($title !== '') {
                     $html .= '<div class="sidebar-ad-caption px-3 py-2 border-top"><span class="small fw-semibold d-block">' . $title . '</span></div>';
                 }
                 $html .= '</a>';
             } else {
                 $html .= '<a href="' . $link . '" target="_blank" rel="noopener sponsored" class="d-block">';
-                $html .= '<img src="' . htmlspecialchars($adImg, ENT_QUOTES, 'UTF-8') . '" class="img-fluid rounded nectra-ad-img" alt="' . $title . '" loading="lazy">';
+                $html .= '<img src="' . htmlspecialchars($adImg, ENT_QUOTES, 'UTF-8') . '" class="img-fluid rounded nectra-ad-img nd-ad-img" alt="' . $title . '" loading="lazy" decoding="async">';
                 $html .= '</a>';
             }
         }
@@ -170,7 +215,7 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
         $code = ad_normalize_ad_code((string)($ad['ad_code'] ?? ''));
         if ($code !== '' && ad_code_has_ad_unit($code)) {
             ad_track_adsense_units($code);
-            if ($isSidebar) {
+            if ($isSidebar || $isInline) {
                 $html .= '<div class="sidebar-ad-code p-3">' . $code . '</div>';
             } else {
                 $html .= '<div class="mt-3" style="margin-top:15px; color:#fff;">' . $code . '</div>';
@@ -182,15 +227,12 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
         return '';
     }
 
-    if ($isSidebar) {
-        return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm">'
-            . '<span class="badge bg-secondary sidebar-ad-badge">Sponsored</span>'
-            . $html
-            . '</div>';
+    if ($isSidebar || $isInline) {
+        return ad_slot_open($ad, $variant) . $html . '</div>';
     }
 
-    return '<div class="ad-container my-5 position-relative p-3 border border-secondary rounded" style="background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(5px); z-index: 5; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">'
-        . '<span class="position-absolute top-0 start-0 badge bg-secondary" style="font-size:10px; opacity:0.8;">SPONSORED</span>'
+    return ad_slot_open($ad, 'banner')
+        . '<span class="position-absolute top-0 start-0 badge bg-secondary nd-ad-badge" style="font-size:10px; opacity:0.8;">SPONSORED</span>'
         . $html
         . '</div>';
 }
@@ -284,12 +326,111 @@ function ad_get_sidebar_displayable(mysqli $conn): array
         }
     }
 
-    return $ads;
+    return ad_dedupe_ads($ads);
 }
 
 function ad_count_sidebar_displayable(mysqli $conn): int
 {
     return count(ad_get_sidebar_displayable($conn));
+}
+
+/**
+ * Spread inline ad HTML blocks between paragraphs in blog content.
+ *
+ * @param list<string> $units
+ */
+function ad_inject_inline_ad_units(string $html, array $units): string
+{
+    if ($units === []) {
+        return $html;
+    }
+
+    $parts = preg_split('/(<\/p>)/i', $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if (!is_array($parts) || count($parts) < 3) {
+        return $html . implode('', $units);
+    }
+
+    $paragraphEnds = (int) (count($parts) / 2);
+    $interval = max(2, (int) floor($paragraphEnds / (count($units) + 1)));
+    $unitIndex = 0;
+    $paraIndex = 0;
+    $out = '';
+
+    foreach ($parts as $part) {
+        $out .= $part;
+        if ($part === '</p>') {
+            $paraIndex++;
+            if ($unitIndex < count($units) && $paraIndex % $interval === 0) {
+                $out .= $units[$unitIndex];
+                $unitIndex++;
+            }
+        }
+    }
+
+    while ($unitIndex < count($units)) {
+        $out .= $units[$unitIndex];
+        $unitIndex++;
+    }
+
+    return $out;
+}
+
+/**
+ * Plan ads for blog post: header banner (optional), sidebar stack, inline units for article body.
+ *
+ * @return array{header_html:string,sidebar_html:string,sidebar_count:int,inline_units:list<string>}
+ */
+function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6): array
+{
+    $empty = ['header_html' => '', 'sidebar_html' => '', 'sidebar_count' => 0, 'inline_units' => []];
+    $ads = ad_get_sidebar_displayable($conn);
+    if ($ads === []) {
+        return $empty;
+    }
+
+    $headerHtml = '';
+    foreach ($ads as $index => $ad) {
+        if (($ad['placement'] ?? '') === 'header') {
+            $headerHtml = ad_render_unit($ad, 'banner-light');
+            unset($ads[$index]);
+            break;
+        }
+    }
+    $ads = array_values($ads);
+
+    $sidebarAds = array_slice($ads, 0, max(0, $sidebarMax));
+    $inlineAds = array_slice($ads, $sidebarMax);
+
+    $sidebarChunks = [];
+    foreach ($sidebarAds as $ad) {
+        $chunk = ad_render_unit($ad, 'sidebar');
+        if ($chunk !== '') {
+            $sidebarChunks[] = $chunk;
+        }
+    }
+
+    $inlineUnits = [];
+    foreach ($inlineAds as $ad) {
+        $chunk = ad_render_unit($ad, 'inline');
+        if ($chunk !== '') {
+            $inlineUnits[] = $chunk;
+        }
+    }
+
+    $sidebarHtml = '';
+    $sidebarCount = count($sidebarChunks);
+    if ($sidebarCount > 0) {
+        $sidebarHtml = '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . $sidebarCount . '">'
+            . implode('', $sidebarChunks)
+            . '</div>';
+    }
+
+    return [
+        'header_html' => $headerHtml,
+        'sidebar_html' => $sidebarHtml,
+        'sidebar_count' => $sidebarCount,
+        'inline_units' => $inlineUnits,
+    ];
 }
 
 function ad_count_active(mysqli $conn): int
@@ -336,31 +477,11 @@ function ad_count_displayable(mysqli $conn): int
 
 function render_sidebar_ads(mysqli $conn): int
 {
-    $ads = ad_get_sidebar_displayable($conn);
-    if (empty($ads)) {
-        return 0;
+    $plan = ad_prepare_post_page_ads($conn);
+    if ($plan['sidebar_html'] !== '') {
+        echo $plan['sidebar_html'];
     }
-
-    $rendered = 0;
-    $chunks = [];
-    foreach ($ads as $ad) {
-        $html = ad_render_unit($ad, 'sidebar');
-        if ($html === '') {
-            continue;
-        }
-        $chunks[] = $html;
-        $rendered++;
-    }
-
-    if ($rendered === 0) {
-        return 0;
-    }
-
-    echo '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . $rendered . '">';
-    echo implode('', $chunks);
-    echo '</div>';
-
-    return $rendered;
+    return $plan['sidebar_count'];
 }
 
 function nectra_render_adsense_head(): void

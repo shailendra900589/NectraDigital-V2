@@ -2,6 +2,7 @@
 namespace Growth\Engines;
 
 use Growth\Models\IndexingQueue;
+use Growth\Models\LandingPage;
 
 /**
  * Multi-engine URL indexing: IndexNow (Bing/Yandex/DDG), sitemap pings (Google/Bing).
@@ -316,12 +317,13 @@ class IndexingEngine
 
         $queueDone = (int)($queue['completed'] ?? 0) + (int)($queue['failed'] ?? 0);
         $queueTotal = (int)($queue['total'] ?? 0);
-        $queuePct = $queueTotal > 0 ? min(100, (int)round(($queueDone / $queueTotal) * 100)) : 100;
+        $queuePct = $queueTotal > 0 ? min(100, (int)round(($queueDone / $queueTotal) * 100)) : 0;
 
         return [
             'pages' => $pages,
             'queue' => $queue,
             'queue_progress_pct' => $queuePct,
+            'queue_idle' => $queueTotal === 0,
             'last_queue_processed_at' => $lastQueueAt,
             'last_cron_at' => $lastRun !== '' ? $lastRun : null,
             'last_cron_meta' => is_array($lastRunMeta) ? $lastRunMeta : [],

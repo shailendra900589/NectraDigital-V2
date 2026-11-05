@@ -71,7 +71,7 @@ function admin_render_dashboard_home(mysqli $conn, array $growthStats): void
         echo '</div>';
     } else {
         echo '<p class="text-muted small mb-3">Growth database is not ready. Run migration once to unlock cities and landing pages.</p>';
-        echo '<a href="../database/migrate.php" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Run migration</a>';
+        echo '<a href="run-migration.php" class="btn btn-sm btn-outline-secondary">Run migration</a>';
     }
     echo '</div></div></div>';
 }

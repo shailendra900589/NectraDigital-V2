@@ -42,7 +42,7 @@ ge_admin_layout();
 ge_admin_layout_start('Industries Manager', 'industries');
 
 if (!ge_table_exists('ge_industries')): ?>
-<div class="alert alert-warning">Run <a href="../../database/migrate.php" target="_blank">database/migrate.php</a> to enable Industries module.</div>
+<div class="alert alert-warning">Run <a href="../run-migration.php">Database migration</a> to enable Industries module.</div>
 <?php elseif ($action === 'add' || ($action === 'edit' && $item)): ?>
 <div class="ge-card">
     <form method="POST">

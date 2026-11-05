@@ -112,11 +112,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // --- Fast GET load (must finish before nginx 504) ---
-$dash = ['pages' => ['total' => 0, 'indexed' => 0, 'pending' => 0, 'submitted' => 0, 'failed' => 0, 'stale_submitted' => 0], 'queue' => ['pending' => 0, 'completed' => 0, 'failed' => 0, 'total' => 0], 'queue_progress_pct' => 100, 'last_cron_at' => null, 'last_queue_processed_at' => null, 'last_cron_meta' => []];
+$dash = ['pages' => ['total' => 0, 'indexed' => 0, 'pending' => 0, 'submitted' => 0, 'failed' => 0, 'stale_submitted' => 0], 'queue' => ['pending' => 0, 'completed' => 0, 'failed' => 0, 'total' => 0], 'queue_progress_pct' => 0, 'queue_idle' => true, 'last_cron_at' => null, 'last_queue_processed_at' => null, 'last_cron_meta' => []];
 $stats = $dash['pages'];
 $queueStats = $dash['queue'];
 $queuePending = 0;
-$queueProgressPct = 100;
+$queueProgressPct = 0;
+$queueIdle = true;
 $pendingPages = [];
 $activity = [];
 $idxInfo = ['key' => '', 'key_url' => '', 'host' => parse_url(SITE_URL, PHP_URL_HOST) ?: ''];
@@ -129,6 +130,7 @@ try {
         $queueStats = $dash['queue'];
         $queuePending = (int)($queueStats['pending'] ?? 0);
         $queueProgressPct = (int)($dash['queue_progress_pct'] ?? 0);
+        $queueIdle = !empty($dash['queue_idle']);
         $pendingPages = LandingPage::pendingSample(15);
         $activity = IndexingQueue::recentActivity(25);
     }
@@ -203,10 +205,10 @@ ge_admin_layout_start('Indexing Manager', 'indexing');
 <div class="ge-card mb-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
         <h2 class="h6 mb-0">Queue Progress</h2>
-        <span class="small text-muted">Completed + failed vs total · <strong id="idx-queue-pct"><?php echo $queueProgressPct; ?>%</strong></span>
+        <span class="small text-muted">Completed + failed vs total · <strong id="idx-queue-pct"><?php echo $queueIdle ? 'Idle' : ($queueProgressPct . '%'); ?></strong></span>
     </div>
     <div class="progress mb-3" style="height:12px;">
-        <div id="idxQueueProgress" class="progress-bar bg-info" role="progressbar" style="width:<?php echo $queueProgressPct; ?>%;" aria-valuenow="<?php echo $queueProgressPct; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+        <div id="idxQueueProgress" class="progress-bar bg-info<?php echo $queueIdle ? ' progress-bar-striped' : ''; ?>" role="progressbar" style="width:<?php echo $queueIdle ? '100' : $queueProgressPct; ?>%; opacity:<?php echo $queueIdle ? '0.25' : '1'; ?>;" aria-valuenow="<?php echo $queueProgressPct; ?>" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
     <div class="row g-3 text-center">
         <div class="col-4"><div class="small text-muted">Queue Pending</div><div class="fw-bold text-warning" id="idx-queue-pending"><?php echo number_format((int)($queueStats['pending'] ?? 0)); ?></div></div>
