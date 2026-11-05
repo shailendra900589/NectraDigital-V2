@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $title = sanitize_db_text($_POST['title'] ?? '');
         $cat = sanitize_db_text($_POST['category'] ?? '');
-        $content = $_POST['content'] ?? '';
+        $content = nectra_sanitize_blog_html($_POST['content'] ?? '');
         $input_slug = sanitize_db_text($_POST['slug'] ?? '');
         $meta_desc = sanitize_db_text($_POST['meta_description'] ?? '');
         $is_orphan = !empty($_POST['is_orphan']) ? 1 : 0;

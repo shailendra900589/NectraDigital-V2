@@ -374,7 +374,7 @@ admin_layout_start($pageTitles[$page], $page, [
 
         echo "<div class='ge-card mb-4'>
             <h5 class='ge-section-head'>Create New Ad Unit</h5>
-            <p class='text-muted small mb-3'>Blog sidebar shows <strong>one card per active Sidebar ad</strong> (no duplicates). For Google AdSense paste the unit snippet with the <code>&lt;ins class=\"adsbygoogle\"&gt;</code> tag — not the loader script alone. Use placement <strong>Top Banner</strong> or <strong>In-Article</strong> for other slots.</p>
+            <p class='text-muted small mb-3'>Blog sidebar lists <strong>every valid active ad</strong> (Sidebar first, then Top Banner and In-Article if needed) — one card per row, no duplicates. For AdSense paste the full unit with <code>&lt;ins class=\"adsbygoogle\"&gt;</code>, not the loader script alone.</p>
             <form method='POST' enctype='multipart/form-data'>
                 <div class='row g-3'>
                     <div class='col-md-4'><input type='text' name='title' class='form-control' placeholder='Ad Name' required></div>

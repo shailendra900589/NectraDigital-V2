@@ -375,7 +375,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
 
                     <div class="blog-content">
                         <?php
-                            $content = nectra_fix_mojibake($post['content']);
+                            $content = nectra_sanitize_blog_html($post['content']);
                             $ad_html = ad_get_html($conn, 'content', 'banner');
 
                             if($ad_html !== '') {

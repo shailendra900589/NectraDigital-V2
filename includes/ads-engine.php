@@ -255,8 +255,8 @@ function ad_get_active(mysqli $conn, array $placements, int $limit, array $exclu
 }
 
 /**
- * Sidebar column: only active ads with placement=sidebar that can actually render.
- * One database row = one sponsored card (no duplication, no header/content spillover).
+ * Sidebar column: every unique active ad that can render (sidebar first, then header/content).
+ * One database row = one sponsored card — never duplicated.
  */
 function ad_get_sidebar_displayable(mysqli $conn): array
 {
@@ -266,18 +266,22 @@ function ad_get_sidebar_displayable(mysqli $conn): array
 
     $ads = [];
     $seen = [];
-    foreach (ad_get_active($conn, ['sidebar'], 100) as $ad) {
-        $id = (int)($ad['id'] ?? 0);
-        if ($id > 0 && isset($seen[$id])) {
-            continue;
+    $placementOrder = ['sidebar', 'header', 'content'];
+
+    foreach ($placementOrder as $placement) {
+        foreach (ad_get_active($conn, [$placement], 500) as $ad) {
+            $id = (int)($ad['id'] ?? 0);
+            if ($id > 0 && isset($seen[$id])) {
+                continue;
+            }
+            if (!ad_has_displayable_content($ad)) {
+                continue;
+            }
+            if ($id > 0) {
+                $seen[$id] = true;
+            }
+            $ads[] = $ad;
         }
-        if (!ad_has_displayable_content($ad)) {
-            continue;
-        }
-        if ($id > 0) {
-            $seen[$id] = true;
-        }
-        $ads[] = $ad;
     }
 
     return $ads;

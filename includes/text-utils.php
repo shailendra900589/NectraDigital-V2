@@ -26,13 +26,51 @@ function nectra_decode_entities(?string $text, int $maxPasses = 6): string
     return $current;
 }
 
-function nectra_fix_mojibake(?string $text): string
+function nectra_utf8_mojibake_score(string $text): int
 {
-    if ($text === null || $text === '') {
-        return '';
+    return substr_count($text, 'Ã') + substr_count($text, 'Â') + substr_count($text, 'â€') + substr_count($text, '�');
+}
+
+/** Undo UTF-8 bytes misread as Windows-1252 / Latin-1 (common with emojis and smart punctuation). */
+function nectra_repair_utf8_layers(string $text): string
+{
+    $previous = null;
+    $current = $text;
+
+    for ($pass = 0; $pass < 6 && $current !== $previous; $pass++) {
+        $previous = $current;
+        if (!preg_match('/(?:Ã|Â|â€|â€™|â€œ|â€"|â€"|ðŸ|�)/u', $current)) {
+            break;
+        }
+
+        $best = $current;
+        $bestScore = nectra_utf8_mojibake_score($current);
+
+        foreach (['Windows-1252', 'ISO-8859-1'] as $from) {
+            $attempt = @mb_convert_encoding($current, 'UTF-8', $from);
+            if (!is_string($attempt) || $attempt === '' || !mb_check_encoding($attempt, 'UTF-8')) {
+                continue;
+            }
+            $score = nectra_utf8_mojibake_score($attempt);
+            if ($score < $bestScore) {
+                $best = $attempt;
+                $bestScore = $score;
+            }
+        }
+
+        $current = $best;
     }
 
-    $text = nectra_decode_entities($text);
+    return $current;
+}
+
+function nectra_clean_mojibake_artifacts(string $text): string
+{
+    $text = str_replace(
+        ["\xc2\xa0", "\xe2\x80\xaf", '&#160;', '&#xA0;', '&nbsp;'],
+        ' ',
+        $text
+    );
 
     $map = [
         'â€™' => "'",
@@ -53,16 +91,48 @@ function nectra_fix_mojibake(?string $text): string
     ];
     $text = str_replace(array_keys($map), array_values($map), $text);
 
-    if (preg_match('/â|Ã|ðŸ|Letâ/u', $text)) {
-        $attempt = @mb_convert_encoding($text, 'UTF-8', 'Windows-1252');
-        if (is_string($attempt) && $attempt !== '' && mb_check_encoding($attempt, 'UTF-8')) {
-            $text = $attempt;
-        }
+    // Broken quote + nbsp sequences from Word exports (e.g. systems""Â like).
+    $text = preg_replace('/"\s*"Â\s*/u', ' ', $text) ?? $text;
+    $text = preg_replace('/"\s*Â(?=\s*[a-zA-Z])/u', '" ', $text) ?? $text;
+    $text = preg_replace('/(?<=[a-zA-Z0-9])\s*Â(?=\s*[a-zA-Z])/u', ' ', $text) ?? $text;
+
+    // Unrecoverable double-encoded emoji / symbol blobs.
+    $text = preg_replace('/\s*(?:Ã.{1,3}){2,}[^\s<]{0,24}\s*/u', ' ', $text) ?? $text;
+    $text = preg_replace('/\x{FFFD}+/u', '', $text) ?? $text;
+    $text = preg_replace('/\s{2,}/u', ' ', $text) ?? $text;
+
+    return $text;
+}
+
+function nectra_fix_mojibake(?string $text): string
+{
+    if ($text === null || $text === '') {
+        return '';
     }
+
+    $text = nectra_decode_entities($text);
+    $text = nectra_repair_utf8_layers($text);
+    $text = nectra_clean_mojibake_artifacts($text);
 
     $text = preg_replace('/Letâ[\x00-\xFF]{0,3}s/u', "Let's", $text) ?? $text;
 
     return trim($text);
+}
+
+/** Blog HTML: fix encoding on output and on admin save. */
+function nectra_sanitize_blog_html(?string $html): string
+{
+    if ($html === null || $html === '') {
+        return '';
+    }
+
+    $html = nectra_fix_mojibake($html);
+
+    if (!mb_check_encoding($html, 'UTF-8')) {
+        $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+    }
+
+    return $html;
 }
 
 function nectra_display_text(?string $text): string
