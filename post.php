@@ -390,7 +390,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                         render_geo_summary($decoded_title);
 
                         $post_faqs = blog_faq_for_post($post);
-                        render_faq_section($post_faqs, 'Article FAQ');
+                        render_faq_section($post_faqs, 'Article FAQ', 'light');
                         
                         render_post_internal_links($conn, $post, $decoded_category);
                     ?>

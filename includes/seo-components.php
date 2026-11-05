@@ -121,7 +121,7 @@ function render_geo_blocks($title, $content_excerpt = '') {
     echo '<div class="p-4 border border-neon rounded bg-glass mb-4"><h2 class="text-neon h6 text-uppercase mb-2"><i class="fas fa-bolt me-2"></i>Quick Answer</h2>';
     echo '<p class="text-dark mb-0 geo-blocks__lead">' . htmlspecialchars($quick) . '</p></div>';
     
-    echo '<div class="p-4 border border-secondary rounded bg-dark mb-4"><h2 class="text-white h6 mb-3"><i class="fas fa-list-check text-neon me-2"></i>Key Takeaways</h2><ul class="text-white-50 small mb-0">';
+    echo '<div class="p-4 border rounded bg-white mb-4" style="border-color:#E2E8F0!important"><h2 class="text-dark h6 mb-3"><i class="fas fa-list-check text-primary me-2"></i>Key Takeaways</h2><ul class="text-muted small mb-0">';
     echo '<li>Actionable strategies backed by 5+ years of industry experience</li>';
     echo '<li>Data-driven approach from Nectra Digital SEO experts</li>';
     echo '<li>Applicable for businesses in India and global markets</li>';
