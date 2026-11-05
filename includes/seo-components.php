@@ -249,9 +249,12 @@ function render_post_internal_links($conn, $post, $category) {
         $links[] = ['url' => '/digital-agency-' . $city, 'title' => 'Digital Agency ' . ucfirst($city)];
     }
     
-    echo '<section class="py-4 mt-4 border-top border-secondary"><h3 class="text-white h6 mb-3"><i class="fas fa-link text-neon me-2"></i>Related Resources</h3><div class="row g-2">';
+    echo '<section class="nd-post-related py-4 mt-4 border-top">';
+    echo '<h3 class="h6 mb-3 text-dark fw-bold"><i class="fas fa-link text-primary me-2"></i>Related Resources</h3>';
+    echo '<div class="row g-2">';
     foreach (array_slice($links, 0, 12) as $link) {
-        echo '<div class="col-md-6"><a href="' . $link['url'] . '" class="text-neon small text-decoration-none"><i class="fas fa-angle-right me-1"></i>' . nectra_display_text($link['title']) . '</a></div>';
+        echo '<div class="col-md-6"><a href="' . htmlspecialchars($link['url'], ENT_QUOTES, 'UTF-8') . '" class="nd-post-related-link small text-decoration-none">';
+        echo '<i class="fas fa-angle-right me-1 text-primary"></i>' . nectra_display_text($link['title']) . '</a></div>';
     }
     echo '</div></section>';
 }

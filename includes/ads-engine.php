@@ -100,7 +100,7 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
                 $html .= '<a href="' . $link . '" target="_blank" rel="noopener sponsored" class="sidebar-ad-link d-block text-decoration-none">';
                 $html .= '<div class="sidebar-ad-img-wrap"><img src="' . htmlspecialchars($adImg, ENT_QUOTES, 'UTF-8') . '" alt="' . $title . '" class="sidebar-ad-img" loading="lazy"></div>';
                 if ($title !== '') {
-                    $html .= '<div class="sidebar-ad-caption px-3 py-2 border-top border-secondary"><span class="text-white small fw-semibold d-block">' . $title . '</span></div>';
+                    $html .= '<div class="sidebar-ad-caption px-3 py-2 border-top"><span class="small fw-semibold d-block">' . $title . '</span></div>';
                 }
                 $html .= '</a>';
             } else {
@@ -126,8 +126,8 @@ function ad_render_unit(array $ad, string $variant = 'banner'): string
     }
 
     if ($isSidebar) {
-        return '<div class="sidebar-ad-card border border-secondary rounded overflow-hidden bg-dark hover-neon-border" style="transition:0.3s;">'
-            . '<span class="badge bg-secondary sidebar-ad-badge">SPONSORED</span>'
+        return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm">'
+            . '<span class="badge bg-secondary sidebar-ad-badge">Sponsored</span>'
             . $html
             . '</div>';
     }
@@ -197,49 +197,36 @@ function ad_get_active(mysqli $conn, array $placements, int $limit, array $exclu
     return $ads;
 }
 
-function ad_build_sidebar_slots(mysqli $conn, int $target = 20, int $minimum = 15): array
+/** Active ads with real content only — no duplicate padding to fill slots. */
+function ad_build_sidebar_slots(mysqli $conn, int $max = 12): array
 {
-    $target = max($minimum, min(25, $target));
-    $minimum = max(15, min($minimum, $target));
+    $max = max(1, min(12, $max));
+    if (!ads_table_exists($conn)) {
+        return [];
+    }
 
-    $ads = array_values(array_filter(
-        ad_get_active($conn, ['sidebar'], $target),
-        'ad_has_displayable_content'
-    ));
-    $usedIds = array_column($ads, 'id');
+    $seen = [];
+    $ads = [];
 
-    if (count($ads) < $target) {
-        $more = array_values(array_filter(
-            ad_get_active($conn, ['header', 'content'], $target - count($ads), $usedIds),
-            'ad_has_displayable_content'
-        ));
-        foreach ($more as $ad) {
-            $ads[] = $ad;
-            $usedIds[] = $ad['id'];
+    $candidates = ad_get_active($conn, ['sidebar', 'header', 'content'], $max * 2);
+    foreach ($candidates as $ad) {
+        $id = (int)($ad['id'] ?? 0);
+        if ($id > 0 && isset($seen[$id])) {
+            continue;
+        }
+        if (!ad_has_displayable_content($ad)) {
+            continue;
+        }
+        if ($id > 0) {
+            $seen[$id] = true;
+        }
+        $ads[] = $ad;
+        if (count($ads) >= $max) {
+            break;
         }
     }
 
-    if (count($ads) < $target) {
-        $more = array_values(array_filter(
-            ad_get_active($conn, ['sidebar', 'header', 'content'], $target - count($ads), $usedIds),
-            'ad_has_displayable_content'
-        ));
-        foreach ($more as $ad) {
-            $ads[] = $ad;
-            $usedIds[] = $ad['id'];
-        }
-    }
-
-    if (count($ads) > 0 && count($ads) < $minimum) {
-        $pool = $ads;
-        $i = 0;
-        while (count($ads) < $minimum) {
-            $ads[] = $pool[$i % count($pool)];
-            $i++;
-        }
-    }
-
-    return array_slice($ads, 0, $target);
+    return $ads;
 }
 
 function ad_count_active(mysqli $conn): int
@@ -284,13 +271,13 @@ function ad_count_displayable(mysqli $conn): int
     return $count;
 }
 
-function render_sidebar_ads(mysqli $conn, int $target = 20): int
+function render_sidebar_ads(mysqli $conn, int $max = 12): int
 {
     if (!ads_table_exists($conn)) {
         return 0;
     }
 
-    $ads = ad_build_sidebar_slots($conn, $target, 15);
+    $ads = ad_build_sidebar_slots($conn, $max);
     if (empty($ads)) {
         return 0;
     }
