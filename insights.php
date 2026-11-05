@@ -188,5 +188,5 @@ if (!$dbUnavailable) {
     <?php include __DIR__ . '/includes/ui/cta.php'; ?>
 </main>
 
-<script src="<?php echo SITE_URL; ?>/assets/js/insights-cards.js?v=1" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/insights-cards.js?v=2" defer></script>
 <?php include 'includes/footer.php'; ?>

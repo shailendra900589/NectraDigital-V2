@@ -19,10 +19,6 @@
                 var href = link.getAttribute('href');
                 if (!href || href === '#') return;
 
-                if (e.target.closest('a.nd-insights-post-link')) {
-                    return;
-                }
-
                 e.preventDefault();
                 window.location.assign(link.href);
             });

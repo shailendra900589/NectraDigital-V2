@@ -170,6 +170,15 @@ article.nd-insights-card .nd-insights-post-link {
     z-index: 5;
 }
 
+article.nd-insights-card .nd-insights-post-link::after {
+    z-index: 6;
+}
+
+/* Let the stretched-link receive clicks (content sits above ::after in paint order). */
+article.nd-insights-card > *:not(a.nd-insights-post-link) {
+    pointer-events: none;
+}
+
 article.nd-insights-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
