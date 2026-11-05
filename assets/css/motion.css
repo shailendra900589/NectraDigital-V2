@@ -163,7 +163,6 @@ a.blog-card--link:focus-visible {
 /* Insights list — Bootstrap stretched-link over full card */
 article.nd-insights-card {
     cursor: pointer;
-    pointer-events: none;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 

@@ -11,6 +11,10 @@
                 if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
                 var card = e.target.closest('article.nd-insights-card');
+                if (!card) {
+                    var col = e.target.closest('[data-nd-insights-grid] .col-md-6');
+                    card = col ? col.querySelector('article.nd-insights-card') : null;
+                }
                 if (!card) return;
 
                 var link = card.querySelector('a.nd-insights-post-link');
@@ -21,7 +25,7 @@
 
                 e.preventDefault();
                 window.location.assign(link.href);
-            });
+            }, true);
         });
     }
 
