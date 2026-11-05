@@ -159,13 +159,30 @@ if (ads_has_code_units($conn)) {
 $header_html = nectra_inject_adsense_head($header_html);
 echo $header_html;
 
-$adPlan = ad_prepare_post_page_ads($conn);
+$is_orphan_post = blog_is_orphan($post);
+$sanitized_post_content = nectra_sanitize_blog_html($post['content']);
+$post_paragraph_count = ad_count_content_paragraphs($sanitized_post_content);
+
+if ($is_orphan_post) {
+    $adPlan = ad_prepare_post_page_ads($conn, 12, [
+        'dense' => true,
+        'allow_duplicate_units' => true,
+        'sidebar_max' => 12,
+        'paragraph_count' => $post_paragraph_count,
+    ]);
+} else {
+    $adPlan = ad_prepare_post_page_ads($conn);
+}
+
 $sidebar_ad_html = $adPlan['sidebar_html'];
 $sidebar_ad_count = $adPlan['sidebar_count'];
 $post_inline_ad_units = $adPlan['inline_units'];
 $post_header_ad_html = $adPlan['header_html'];
+$post_mid_ad_html = $adPlan['mid_html'] ?? '';
+$post_footer_ad_html = $adPlan['footer_html'] ?? '';
 $has_sidebar = $sidebar_ad_count > 0;
 $main_col_class = $has_sidebar ? 'col-lg-8 nd-post-main-col' : 'col-12 nd-post-main-col';
+$inline_ad_paragraph_gap = $is_orphan_post ? 1 : 2;
 $GLOBALS['nectra_ads_prune_script'] = true;
 
 // 7. COMMENT LOGIC
@@ -329,7 +346,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
     .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 0; }
 </style>
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=1">
+<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=2">
 
 <main>
     <header class="post-hero-header text-center">
@@ -354,7 +371,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
         <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: radial-gradient(circle, #00f2ff 0%, transparent 100%); opacity: 0.5;"></div>
     </header>
 
-    <article class="py-5">
+    <article class="py-5<?php echo $is_orphan_post ? ' nd-post-orphan' : ''; ?>"<?php echo $is_orphan_post ? ' data-nd-orphan-post="1"' : ''; ?>>
         <div class="container">
             <?php
             if ($post_header_ad_html !== ''):
@@ -377,8 +394,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
 
                     <div class="blog-content">
                         <?php
-                            $content = nectra_sanitize_blog_html($post['content']);
-                            $content = ad_inject_inline_ad_units($content, $post_inline_ad_units);
+                            $content = ad_inject_inline_ad_units($sanitized_post_content, $post_inline_ad_units, $inline_ad_paragraph_gap);
                             echo $content;
                         ?>
                     </div>
@@ -399,10 +415,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                     <?php
                         render_geo_summary($decoded_title);
 
+                        if ($post_mid_ad_html !== '') {
+                            echo $post_mid_ad_html;
+                        }
+
                         $post_faqs = blog_faq_for_post($post);
                         render_faq_section($post_faqs, 'Article FAQ', 'light', 'embedded');
 
                         render_post_internal_links($conn, $post, $decoded_category);
+
+                        if ($post_footer_ad_html !== '') {
+                            echo $post_footer_ad_html;
+                        }
                     ?>
 
                     <div class="mt-4 pt-4 border-top nd-post-actions d-flex justify-content-between flex-wrap gap-2">
@@ -497,5 +521,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     </article>
 </main>
 
-<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=1" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/ads-display.js?v=2" defer></script>
 <?php include 'includes/footer.php'; ?>

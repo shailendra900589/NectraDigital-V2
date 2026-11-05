@@ -66,6 +66,16 @@
     }
 }
 
+.nd-post-orphan .sidebar-ad-stack {
+    gap: 1rem;
+}
+
+.nd-sponsored-band .nd-inline-ad-card,
+.nd-sponsored-band .ad-container {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
 .nd-post-sponsored-heading {
     display: none;
 }

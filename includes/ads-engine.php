@@ -164,7 +164,11 @@ function ad_slot_open(array $ad, string $variant): string
 {
     $id = (int)($ad['id'] ?? 0);
     $type = strtolower(trim((string)($ad['type'] ?? 'image')));
+    $instance = trim((string)($ad['_render_instance'] ?? ''));
     $data = ' data-nd-ad-id="' . $id . '" data-nd-ad-type="' . htmlspecialchars($type, ENT_QUOTES, 'UTF-8') . '"';
+    if ($instance !== '') {
+        $data .= ' data-nd-ad-instance="' . htmlspecialchars($instance, ENT_QUOTES, 'UTF-8') . '"';
+    }
 
     if ($variant === 'sidebar') {
         return '<div class="sidebar-ad-card border rounded overflow-hidden bg-white shadow-sm nd-ad-slot nd-ad-pending"' . $data . '>'
@@ -297,10 +301,11 @@ function ad_get_active(mysqli $conn, array $placements, int $limit, array $exclu
 }
 
 /**
- * Sidebar column: every unique active ad that can render (sidebar first, then header/content).
- * One database row = one sponsored card — never duplicated.
+ * All active ads that can render (sidebar → header → content order).
+ *
+ * @param bool $dedupeSnippets When false, keep separate DB rows even if they share the same snippet (orphan dense mode).
  */
-function ad_get_sidebar_displayable(mysqli $conn): array
+function ad_get_displayable_ads(mysqli $conn, bool $dedupeSnippets = true): array
 {
     if (!ads_table_exists($conn)) {
         return [];
@@ -326,7 +331,60 @@ function ad_get_sidebar_displayable(mysqli $conn): array
         }
     }
 
-    return ad_dedupe_ads($ads);
+    return $dedupeSnippets ? ad_dedupe_ads($ads) : $ads;
+}
+
+/** Sidebar column: unique snippets only (default blog posts). */
+function ad_get_sidebar_displayable(mysqli $conn): array
+{
+    return ad_get_displayable_ads($conn, true);
+}
+
+function ad_count_content_paragraphs(string $html): int
+{
+    if ($html === '') {
+        return 0;
+    }
+    return max(0, (int)preg_match_all('/<\/p>\s*/i', $html));
+}
+
+/**
+ * @return list<string>
+ */
+function ad_build_cycled_units(array $ads, int $count, string $variant): array
+{
+    if ($ads === [] || $count <= 0) {
+        return [];
+    }
+
+    $units = [];
+    $total = count($ads);
+    for ($i = 0; $i < $count; $i++) {
+        $ad = $ads[$i % $total];
+        $ad['_render_instance'] = $variant . '-' . ($i + 1) . '-ad' . (int)($ad['id'] ?? 0);
+        $chunk = ad_render_unit($ad, $variant);
+        if ($chunk !== '') {
+            $units[] = $chunk;
+        }
+    }
+
+    return $units;
+}
+
+/**
+ * @param list<string> $units
+ */
+function ad_wrap_sponsored_grid(array $units, string $extraClass = ''): string
+{
+    if ($units === []) {
+        return '';
+    }
+    $class = trim('nd-sponsored-band ' . $extraClass);
+    $html = '<section class="' . htmlspecialchars($class, ENT_QUOTES, 'UTF-8') . '" aria-label="Sponsored"><div class="row g-3">';
+    foreach ($units as $unit) {
+        $html .= '<div class="col-md-6 col-lg-4">' . $unit . '</div>';
+    }
+    return $html . '</div></section>';
 }
 
 function ad_count_sidebar_displayable(mysqli $conn): int
@@ -339,7 +397,7 @@ function ad_count_sidebar_displayable(mysqli $conn): int
  *
  * @param list<string> $units
  */
-function ad_inject_inline_ad_units(string $html, array $units): string
+function ad_inject_inline_ad_units(string $html, array $units, int $minParagraphGap = 2): string
 {
     if ($units === []) {
         return $html;
@@ -351,7 +409,13 @@ function ad_inject_inline_ad_units(string $html, array $units): string
     }
 
     $paragraphEnds = (int) (count($parts) / 2);
-    $interval = max(2, (int) floor($paragraphEnds / (count($units) + 1)));
+    $minParagraphGap = max(1, $minParagraphGap);
+    if ($minParagraphGap <= 1) {
+        $interval = 1;
+    } else {
+        $interval = max($minParagraphGap, (int) floor($paragraphEnds / (count($units) + 1)));
+    }
+
     $unitIndex = 0;
     $paraIndex = 0;
     $out = '';
@@ -378,12 +442,28 @@ function ad_inject_inline_ad_units(string $html, array $units): string
 /**
  * Plan ads for blog post: header banner (optional), sidebar stack, inline units for article body.
  *
- * @return array{header_html:string,sidebar_html:string,sidebar_count:int,inline_units:list<string>}
+ * Options: dense, allow_duplicate_units, sidebar_max, paragraph_count (for orphan monetization pages).
+ *
+ * @return array{header_html:string,sidebar_html:string,sidebar_count:int,inline_units:list<string>,mid_html:string,footer_html:string}
  */
-function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6): array
+function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6, array $options = []): array
 {
-    $empty = ['header_html' => '', 'sidebar_html' => '', 'sidebar_count' => 0, 'inline_units' => []];
-    $ads = ad_get_sidebar_displayable($conn);
+    $empty = [
+        'header_html' => '',
+        'sidebar_html' => '',
+        'sidebar_count' => 0,
+        'inline_units' => [],
+        'mid_html' => '',
+        'footer_html' => '',
+    ];
+
+    $dense = !empty($options['dense']);
+    $dedupeSnippets = !($options['allow_duplicate_units'] ?? false);
+    if ($dense) {
+        $sidebarMax = max($sidebarMax, (int)($options['sidebar_max'] ?? 12));
+    }
+
+    $ads = ad_get_displayable_ads($conn, $dedupeSnippets);
     if ($ads === []) {
         return $empty;
     }
@@ -398,27 +478,55 @@ function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6): array
     }
     $ads = array_values($ads);
 
-    $sidebarAds = array_slice($ads, 0, max(0, $sidebarMax));
-    $inlineAds = array_slice($ads, $sidebarMax);
-
-    $sidebarChunks = [];
-    foreach ($sidebarAds as $ad) {
-        $chunk = ad_render_unit($ad, 'sidebar');
-        if ($chunk !== '') {
-            $sidebarChunks[] = $chunk;
-        }
-    }
-
+    $midHtml = '';
+    $footerHtml = '';
     $inlineUnits = [];
-    foreach ($inlineAds as $ad) {
-        $chunk = ad_render_unit($ad, 'inline');
-        if ($chunk !== '') {
-            $inlineUnits[] = $chunk;
+
+    if ($dense && $ads !== []) {
+        $sidebarAds = array_slice($ads, 0, min($sidebarMax, count($ads)));
+        $sidebarChunks = [];
+        foreach ($sidebarAds as $i => $ad) {
+            $ad['_render_instance'] = 'sidebar-' . ($i + 1);
+            $chunk = ad_render_unit($ad, 'sidebar');
+            if ($chunk !== '') {
+                $sidebarChunks[] = $chunk;
+            }
+        }
+
+        $paraCount = max(4, (int)($options['paragraph_count'] ?? 0));
+        $inlineTarget = min(24, max(count($ads) * 2, (int)ceil($paraCount / 1.15)));
+        $inlineUnits = ad_build_cycled_units($ads, $inlineTarget, 'inline');
+
+        $midHtml = ad_wrap_sponsored_grid(
+            ad_build_cycled_units($ads, min(3, max(2, count($ads))), 'inline'),
+            'nd-sponsored-mid my-4'
+        );
+        $footerHtml = ad_wrap_sponsored_grid(
+            ad_build_cycled_units($ads, min(9, max(4, count($ads) * 2)), 'banner-light'),
+            'nd-sponsored-footer mt-2 mb-4'
+        );
+    } else {
+        $sidebarAds = array_slice($ads, 0, max(0, $sidebarMax));
+        $inlineAds = array_slice($ads, $sidebarMax);
+
+        $sidebarChunks = [];
+        foreach ($sidebarAds as $ad) {
+            $chunk = ad_render_unit($ad, 'sidebar');
+            if ($chunk !== '') {
+                $sidebarChunks[] = $chunk;
+            }
+        }
+
+        foreach ($inlineAds as $ad) {
+            $chunk = ad_render_unit($ad, 'inline');
+            if ($chunk !== '') {
+                $inlineUnits[] = $chunk;
+            }
         }
     }
 
     $sidebarHtml = '';
-    $sidebarCount = count($sidebarChunks);
+    $sidebarCount = count($sidebarChunks ?? []);
     if ($sidebarCount > 0) {
         $sidebarHtml = '<div class="sidebar-ad-stack" data-nd-sidebar-ad-count="' . $sidebarCount . '">'
             . implode('', $sidebarChunks)
@@ -430,6 +538,8 @@ function ad_prepare_post_page_ads(mysqli $conn, int $sidebarMax = 6): array
         'sidebar_html' => $sidebarHtml,
         'sidebar_count' => $sidebarCount,
         'inline_units' => $inlineUnits,
+        'mid_html' => $midHtml,
+        'footer_html' => $footerHtml,
     ];
 }
 
