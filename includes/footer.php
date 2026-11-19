@@ -18,7 +18,7 @@ $footer_cities = array_slice(get_cities_data(), 0, 8, true);
 <?php include __DIR__ . '/ui/footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-<script src="<?php echo SITE_URL; ?>/assets/js/main.js?v=3" defer></script>
+<script src="<?php echo SITE_URL; ?>/assets/js/main.js?v=4" defer></script>
 <script src="<?php echo SITE_URL; ?>/assets/js/motion.js?v=10" defer></script>
 <script src="<?php echo SITE_URL; ?>/assets/js/depth-3d.js?v=8" defer></script>
 

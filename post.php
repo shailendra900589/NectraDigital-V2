@@ -243,7 +243,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
         color: rgba(255, 255, 255, 0.7);
     }
     .post-hero-header .blog-post-meta i { color: #38BDF8; opacity: 0.9; }
-    main { position: relative; background: #F8FAFC; min-height: 100vh; }
+    main { position: relative; background: #F8FAFC; min-height: auto; }
     .post-article-wrap {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;

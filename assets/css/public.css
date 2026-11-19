@@ -698,7 +698,30 @@ a.nd-cta-tile:visited {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 5rem;
     padding-bottom: 2.5rem;
+    margin-bottom: 0;
     font-size: 0.9rem;
+}
+
+/* No trailing white band below footer */
+html {
+    height: auto;
+}
+
+body.nd-has-fixed-nav {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0 !important;
+}
+
+body.nd-has-fixed-nav > main {
+    flex: 1 0 auto;
+}
+
+body.nd-has-fixed-nav > footer.nd-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    margin-bottom: 0;
 }
 
 .nd-footer-title {

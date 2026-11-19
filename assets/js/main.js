@@ -78,6 +78,37 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    function collapseFooterWhitespace() {
+        document.querySelectorAll('.skiptranslate, .goog-te-banner-frame, iframe.goog-te-banner-frame, #goog-gt-tt').forEach(function (el) {
+            el.style.cssText = 'display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;visibility:hidden!important;margin:0!important;padding:0!important;border:0!important;';
+        });
+
+        var footer = document.querySelector('footer.nd-footer');
+        if (!footer) return;
+
+        var node = footer.nextElementSibling;
+        while (node) {
+            var next = node.nextElementSibling;
+            var tag = node.tagName;
+            if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'LINK') {
+                node = next;
+                continue;
+            }
+            if (tag === 'DIV' && !node.classList.contains('nectra-floating-wrap') && !node.id && (node.className || '').indexOf('goog-te') !== -1) {
+                node.style.display = 'none';
+                node.style.height = '0';
+            }
+            if (node.id === 'nectra-chatbot-panel') {
+                break;
+            }
+            node = next;
+        }
+    }
+
+    collapseFooterWhitespace();
+    window.setTimeout(collapseFooterWhitespace, 800);
+    window.setTimeout(collapseFooterWhitespace, 2500);
+
     // 4. Smooth Anchor Link Scrolling
     document.querySelectorAll('a[href^="#"]:not([href="#"]):not([data-bs-toggle])').forEach(function(anchor) {
         anchor.addEventListener('click', function(e) {

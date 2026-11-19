@@ -1,14 +1,33 @@
 /* Google Translate widget — hide default UI, use custom switcher */
 .goog-te-banner-frame,
+.skiptranslate,
 .skiptranslate iframe,
+iframe.goog-te-banner-frame,
 #goog-gt-tt,
-.goog-te-balloon-frame {
+.goog-te-balloon-frame,
+.goog-te-menu-value,
+.goog-te-spinner-pos,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    pointer-events: none !important;
 }
 
 body {
     top: 0 !important;
     position: static !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .nectra-gtranslate-host {
