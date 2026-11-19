@@ -102,11 +102,12 @@ footer.nd-footer.nd-section-visible .nd-footer-grid > [class*="col"] {
 }
 
 .nd-footer-links a {
-    transition: transform 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+    transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .nd-footer-links a:hover {
-    transform: translateX(4px);
+    color: #fff;
+    opacity: 1;
 }
 
 .filter-btn {
@@ -517,4 +518,53 @@ article.nd-insights-card:focus-within {
 .svc-industry-pill:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
+}
+
+/* —— Links: motion layers must not steal clicks or flicker on hover —— */
+a[href].nd-card,
+a.blog-card--link,
+footer.nd-footer a[href],
+.nd-cta-band a[href],
+.nd-navbar a[href],
+.nd-mega-menu a[href] {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+a.nd-card *,
+a.blog-card--link * {
+    pointer-events: none;
+}
+
+footer.nd-footer {
+    isolation: isolate;
+}
+
+footer.nd-footer .nd-footer-grid > [class*="col"],
+footer.nd-footer .nd-motion-div,
+footer.nd-footer .nd-reveal,
+footer.nd-footer .nd-motion-surface {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    will-change: auto;
+}
+
+footer.nd-footer .nd-motion-div:hover,
+footer.nd-footer .nd-motion-surface:hover,
+footer.nd-footer .nd-motion-surface::after {
+    transform: none !important;
+    animation: none !important;
+    opacity: 0 !important;
+    box-shadow: none !important;
+}
+
+footer.nd-footer .nd-depth-container {
+    transform: none !important;
+}
+
+.nd-motion-div a[href],
+.nd-motion-surface a[href] {
+    z-index: 3;
 }

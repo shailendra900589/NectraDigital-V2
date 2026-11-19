@@ -4,7 +4,7 @@ if (!function_exists('render_nap_block')) {
 }
 require_once dirname(__DIR__) . '/nav-data.php';
 ?>
-<footer class="nd-footer">
+<footer class="nd-footer nd-no-section-animate">
     <div class="container">
         <div class="row g-4 g-lg-5 nd-footer-grid">
             <div class="col-lg-4 col-md-6">

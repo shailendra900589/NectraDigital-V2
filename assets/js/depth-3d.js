@@ -36,12 +36,12 @@
     function tagElements() {
         document.body.classList.add('nd-depth-active');
 
-        document.querySelectorAll('body > section, main section, footer.nd-footer, .nd-trust-strip').forEach(function (sec) {
+        document.querySelectorAll('body > section, main section, .nd-trust-strip').forEach(function (sec) {
             if (sec.matches('.sticky-top')) return;
             sec.classList.add('nd-depth-section');
         });
 
-        document.querySelectorAll('main .container, main .container-fluid, footer .container').forEach(function (c) {
+        document.querySelectorAll('main .container, main .container-fluid').forEach(function (c) {
             c.classList.add('nd-depth-container');
         });
 
@@ -79,6 +79,7 @@
         });
 
         document.querySelectorAll('.nd-motion-div').forEach(function (div) {
+            if (div.closest('footer.nd-footer, .nd-navbar, .navbar')) return;
             div.classList.add('nd-depth-block');
         });
 

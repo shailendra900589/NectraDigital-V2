@@ -35,7 +35,7 @@
     }
 
     function initSections(sectionObserver) {
-        document.querySelectorAll('body > section, main section, footer.nd-footer').forEach(function (sec) {
+        document.querySelectorAll('body > section, main section').forEach(function (sec) {
             if (sec.matches(skipSectionMatch)) return;
             if (sec.closest('.nd-navbar, header.svc-hero')) return;
 
@@ -87,6 +87,7 @@
     function shouldSkipDiv(div) {
         if (!div || div.nodeType !== 1) return true;
         if (div.closest && div.closest('a.blog-card--link, article.nd-insights-card, article.blog-card')) return true;
+        if (div.closest && div.closest('footer.nd-footer, .nd-navbar, .navbar')) return true;
         if (div.matches(divSkipSelector)) return true;
         if (div.closest(divSkipSelector)) return true;
         if (div.closest('header.svc-hero, .nd-hero-home') && !div.closest('.svc-hero-card, .nd-home-dashboard')) {
@@ -126,12 +127,12 @@
             'main div.border',
             'main div.shadow-sm',
             'main div.alert',
-            'main div.list-group-item',
-            'footer.nd-footer div[class*="col-"]'
+            'main div.list-group-item'
         ];
 
         queries.forEach(function (q) {
             document.querySelectorAll(q).forEach(function (div) {
+                if (div.closest('footer.nd-footer, .nd-navbar, .navbar')) return;
                 if (div.closest('[data-nd-insights-grid]')) return;
                 if (seen.has(div) || !qualifiesDiv(div)) return;
                 if (
@@ -179,7 +180,6 @@
         '.project-item',
         '.nd-trust-item',
         '.nd-social-link',
-        '.nd-footer-grid > [class*="col"]',
         '.nd-home-tech-icons i',
         '.nd-home-kpi',
         '.nd-home-dashboard',
@@ -240,6 +240,7 @@
         initSections(sectionObserver);
 
         document.querySelectorAll(componentSelector).forEach(function (el) {
+            if (el.closest('footer.nd-footer, .nd-navbar, .navbar')) return;
             if (el.closest('.nd-contact-section')) return;
             if (el.closest('[data-nd-insights-grid]')) return;
             if (el.closest('.svc-hero-card, .nd-hero-home .nd-home-dashboard')) return;
