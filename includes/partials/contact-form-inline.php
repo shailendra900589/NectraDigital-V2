@@ -8,7 +8,7 @@ $form_city = $form_city ?? '';
 $form_instance = $form_instance ?? 'main';
 $form_id = 'serviceCityForm_' . substr(md5($form_service . $form_city . $form_instance), 0, 8);
 ?>
-<div class="svc-inline-form-wrap">
+<div class="svc-inline-form-wrap nd-interactive-zone" data-nd-interactive>
     <form id="<?php echo htmlspecialchars($form_id); ?>" class="svc-inline-form" novalidate>
         <div class="mb-3">
             <label class="form-label text-muted small mb-1 fw-semibold">Full Name</label>

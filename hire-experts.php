@@ -166,7 +166,7 @@ include 'includes/header.php';
     </section>
 
     <!-- Hire Form Section -->
-    <section class="py-5" id="hire-form">
+    <section class="py-5 nd-interactive-zone nd-no-section-animate" id="hire-form">
         <div class="container">
             <div class="text-center mb-5">
                 <span class="text-primary fw-semibold small text-uppercase" style="letter-spacing: 0.05em;">Project Inquiry</span>

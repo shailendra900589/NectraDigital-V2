@@ -8,6 +8,53 @@
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
 
+    var interactiveRootSelector =
+        '.nd-interactive-zone, .nd-contact-section, .nd-cta-band, .nd-insights-grid, ' +
+        '.nd-no-section-animate, .svc-inline-form-wrap, #contactPageFormWrap, [data-nd-interactive], ' +
+        'form, .nd-ajax-form, .svc-inline-form';
+
+    var interactiveDescendantSelector =
+        'form, .nd-ajax-form, .svc-inline-form, input, select, textarea, button, label, ' +
+        'a[href], .btn, .nd-cta-tile, .accordion-button, .dropdown-item, .nav-link';
+
+    function isInteractiveRoot(el) {
+        if (!el || el.nodeType !== 1) return false;
+        if (el.matches && el.matches(interactiveRootSelector)) return true;
+        return !!(el.closest && el.closest(interactiveRootSelector));
+    }
+
+    function containsInteractive(el) {
+        if (!el || el.nodeType !== 1) return false;
+        if (el.matches && el.matches(interactiveDescendantSelector)) return true;
+        return !!(el.querySelector && el.querySelector(interactiveDescendantSelector));
+    }
+
+    function stripMotionClasses(el) {
+        if (!el || !el.classList) return;
+        el.classList.remove('nd-motion-div', 'nd-motion-surface', 'nd-depth-block', 'nd-reveal', 'nd-reveal-fade');
+        el.style.opacity = '';
+        el.style.transform = '';
+        el.style.willChange = '';
+    }
+
+    /** Remove auto-motion from forms, CTAs, and any block that wraps links/inputs. */
+    function neutralizeInteractiveMotion() {
+        document.querySelectorAll(interactiveRootSelector).forEach(function (root) {
+            var node = root;
+            while (node && node !== document.body) {
+                stripMotionClasses(node);
+                node = node.parentElement;
+            }
+            root.querySelectorAll('.nd-motion-div, .nd-motion-surface, .nd-reveal, .nd-reveal-fade').forEach(stripMotionClasses);
+        });
+
+        document.querySelectorAll('.nd-motion-div, .nd-reveal, .nd-reveal-fade').forEach(function (el) {
+            if (containsInteractive(el)) {
+                stripMotionClasses(el);
+            }
+        });
+    }
+
     function markVisible(el) {
         el.classList.add('nd-is-visible');
         el.classList.add('nd-section-visible');
@@ -96,6 +143,9 @@
         if (div.closest('.nd-contact-section') || div.classList.contains('nd-contact-panel') || div.classList.contains('nd-contact-shell')) {
             return true;
         }
+        if (isInteractiveRoot(div) || containsInteractive(div)) {
+            return true;
+        }
         var h = div.offsetHeight;
         var w = div.offsetWidth;
         if (h < 18 && w < 18) return true;
@@ -116,44 +166,15 @@
         return false;
     }
 
+  /** Optional opt-in only — broad auto-tagging broke clicks on forms and link columns. */
     function initDivMotion(observer) {
-        var seen = new Set();
-        var queries = [
-            'main div[class*="col-"]',
-            'main .row > div',
-            'main div[class*="nd-"]',
-            'main div[class*="svc-"]',
-            'main div[class*="rounded"]',
-            'main div.border',
-            'main div.shadow-sm',
-            'main div.alert',
-            'main div.list-group-item'
-        ];
-
-        queries.forEach(function (q) {
-            document.querySelectorAll(q).forEach(function (div) {
-                if (div.closest('footer.nd-footer, .nd-navbar, .navbar')) return;
-                if (div.closest('[data-nd-insights-grid]')) return;
-                if (seen.has(div) || !qualifiesDiv(div)) return;
-                if (
-                    /\bcol(-|$)/.test(div.className) &&
-                    div.querySelector(
-                        ':scope > .nd-card, :scope > article, :scope > .aeo-card, :scope > .blog-card, :scope > a.blog-card--link, :scope > article.nd-insights-card'
-                    )
-                ) {
-                    return;
-                }
-                seen.add(div);
-
-                var parent = div.parentElement;
-                var idx = parent ? parent.querySelectorAll(':scope > .nd-motion-div').length : 0;
-                div.classList.add('nd-motion-div');
-                if (/\b(nd-card|rounded|border|shadow|svc-|p-[34]|p-md-[45])\b/.test(div.className)) {
-                    div.classList.add('nd-motion-surface');
-                }
-                div.style.setProperty('--nd-reveal-delay', Math.min(idx * 48, 640) + 'ms');
-                observer.observe(div);
-            });
+        document.querySelectorAll('[data-nd-motion-block]').forEach(function (div) {
+            if (isInteractiveRoot(div) || containsInteractive(div)) return;
+            div.classList.add('nd-motion-div');
+            if (/\b(nd-card|rounded|border|shadow|svc-|p-[34]|p-md-[45])\b/.test(div.className)) {
+                div.classList.add('nd-motion-surface');
+            }
+            observer.observe(div);
         });
     }
 
@@ -211,6 +232,7 @@
                 el.style.opacity = '1';
                 el.style.transform = 'none';
             });
+            neutralizeInteractiveMotion();
             document.body.classList.add('nd-motion-ready');
             return;
         }
@@ -242,6 +264,7 @@
         document.querySelectorAll(componentSelector).forEach(function (el) {
             if (el.closest('footer.nd-footer, .nd-navbar, .navbar')) return;
             if (el.closest('.nd-contact-section')) return;
+            if (isInteractiveRoot(el) || containsInteractive(el)) return;
             if (el.closest('[data-nd-insights-grid]')) return;
             if (el.closest('.svc-hero-card, .nd-hero-home .nd-home-dashboard')) return;
             if (el.matches('.btn, .btn-nectra-primary') && el.closest('.svc-hero, .nd-hero-home, header.nd-page-hero, header.svc-hero')) return;
@@ -260,6 +283,7 @@
         });
 
         initDivMotion(sectionObserver);
+        neutralizeInteractiveMotion();
 
         document.body.classList.add('nd-motion-ready');
 
@@ -275,6 +299,7 @@
                     }
                 }
             });
+            neutralizeInteractiveMotion();
         });
 
         var glows = document.querySelectorAll('.svc-hero-glow, .nd-hero-glow');

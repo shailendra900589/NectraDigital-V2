@@ -60,6 +60,8 @@
         document.querySelectorAll(cardSel).forEach(function (el) {
             if (el.classList.contains('blog-card--link') || el.classList.contains('nd-insights-card')) return;
             if (el.closest('[data-nd-insights-grid]')) return;
+            if (el.tagName === 'A' || el.closest('a[href]')) return;
+            if (el.querySelector && el.querySelector('form, input, select, textarea, button, a[href]')) return;
             el.classList.add('nd-depth-card');
         });
 

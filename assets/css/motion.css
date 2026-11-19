@@ -568,3 +568,110 @@ footer.nd-footer .nd-depth-container {
 .nd-motion-surface a[href] {
     z-index: 3;
 }
+
+/* —— Interactive zones: forms, CTAs, tel/mail links —— */
+.nd-interactive-zone,
+.nd-interactive-zone .nd-motion-div,
+.nd-interactive-zone .nd-reveal,
+[data-nd-interactive] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    will-change: auto;
+}
+
+.nd-interactive-zone .nd-motion-surface::after,
+.nd-interactive-zone .nd-motion-div::after {
+    display: none !important;
+}
+
+form,
+.nd-ajax-form,
+.svc-inline-form,
+.nd-contact-panel,
+#contactPageFormWrap {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+form input,
+form select,
+form textarea,
+form button,
+form label,
+form a[href],
+.nd-ajax-form input,
+.nd-ajax-form select,
+.nd-ajax-form textarea,
+.nd-ajax-form button,
+.nd-ajax-form label,
+.svc-inline-form input,
+.svc-inline-form select,
+.svc-inline-form textarea,
+.svc-inline-form button,
+.svc-inline-form label {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 5;
+}
+
+.nd-motion-div:has(form),
+.nd-motion-div:has(.nd-ajax-form),
+.nd-motion-div:has(.svc-inline-form),
+.nd-motion-div:has(input),
+.nd-motion-div:has(select),
+.nd-motion-div:has(textarea),
+.nd-motion-div:has(button),
+.nd-reveal:has(form),
+.nd-reveal:has(a.nd-cta-tile) {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    will-change: auto;
+    overflow: visible;
+}
+
+.nd-motion-div:has(form):hover,
+.nd-motion-div:has(.nd-ajax-form):hover,
+.nd-motion-div:has(a[href]):hover {
+    transform: none !important;
+    box-shadow: none;
+}
+
+.nd-cta-band a.nd-cta-tile,
+a.nd-cta-tile,
+a.nd-card[href],
+a.btn,
+a.nd-btn-motion,
+button.nd-btn-motion {
+    pointer-events: auto !important;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+    isolation: isolate;
+}
+
+a.nd-cta-tile *,
+a.nd-card[href] > *,
+a.nd-btn-motion > *,
+a.btn > * {
+    pointer-events: none;
+}
+
+a.nd-btn-motion::after,
+button.nd-btn-motion::after {
+    pointer-events: none;
+    z-index: 0;
+}
+
+.nd-cta-band .col:has(> a.nd-cta-tile),
+.nd-cta-band [class*="col"]:has(> a.nd-cta-tile) {
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+main a[href]:not(.nd-card):not(.blog-card--link):not(.nd-cta-tile) {
+    position: relative;
+    z-index: 2;
+}

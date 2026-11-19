@@ -194,7 +194,7 @@ if ($is_city_page && !empty($city)) {
                     <?php include __DIR__ . '/partials/service-overview-extras.php'; ?>
                 </div>
                 <aside class="svc-overview-aside">
-                    <div class="svc-sidebar-card p-4 svc-sidebar-sticky" id="serviceCityForm">
+                    <div class="svc-sidebar-card p-4 svc-sidebar-sticky nd-interactive-zone" id="serviceCityForm" data-nd-interactive>
                         <h3 class="h6 fw-bold text-dark mb-3"><?php echo $is_city_page ? 'Start Your Project in ' . htmlspecialchars($city_name) : 'Start Your Project'; ?></h3>
                         <?php $form_instance = 'sidebar'; include __DIR__ . '/partials/contact-form-inline.php'; ?>
                         <hr class="my-3 svc-sidebar-divider">

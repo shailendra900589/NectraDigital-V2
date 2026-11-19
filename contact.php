@@ -72,12 +72,12 @@ include 'includes/header.php';
     <?php include __DIR__ . '/includes/ui/trust-bar.php'; ?>
 
     <!-- MAIN CONTACT SECTION -->
-    <section class="py-5">
+    <section class="py-5 nd-interactive-zone nd-no-section-animate" aria-label="Contact details and project form">
         <div class="container py-3">
             <div class="row g-5">
                 <!-- Left Column: Company & Operations Details -->
                 <div class="col-lg-5">
-                    <div class="p-4 p-md-5 bg-white border rounded-4 shadow-sm h-100">
+                    <div class="p-4 p-md-5 bg-white border rounded-4 shadow-sm h-100" data-nd-interactive>
                         <h2 class="h4 fw-bold text-dark mb-4 nd-section-title">Operations &amp; Support</h2>
 
                         <div class="d-flex align-items-start mb-4">
@@ -151,7 +151,7 @@ include 'includes/header.php';
 
                 <!-- Right Column: Project Inquiry Form -->
                 <div class="col-lg-7">
-                    <div class="p-4 p-md-5 bg-white border rounded-4 shadow-sm h-100" id="contactPageFormWrap">
+                    <div class="p-4 p-md-5 bg-white border rounded-4 shadow-sm h-100" id="contactPageFormWrap" data-nd-interactive>
                         <h2 class="h3 fw-bold text-dark mb-1 nd-section-title">Request a Free Proposal</h2>
                         <p class="text-muted small mb-4">Complete the briefing below. A senior strategist will review your requirements.</p>
 
