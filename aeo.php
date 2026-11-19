@@ -4,9 +4,9 @@ require_once 'includes/seo-components.php';
 require_once 'includes/i18n.php';
 require_once 'includes/eeat-copy.php';
 
-$page_title = "SEO & Digital Marketing FAQ | Answer Engine Optimized Knowledge Base";
-$page_desc = "Direct answers to top SEO, AI automation, and digital marketing questions. What is SEO? How much does SEO cost? Best SEO company in India? Optimized for Google AI Overviews and ChatGPT.";
-$page_keys = "What is SEO, How much does SEO cost, Best SEO Company India, What is AI Automation, What is Digital Marketing, Lead Generation";
+$page_title = "Software Development FAQ | AEO Knowledge Base | Nectra Digital";
+$page_desc = "Direct answers on custom software development, SaaS cost in India, web & mobile engineering, AI automation, and SEO — optimized for Google AI Overviews and answer engines.";
+$page_keys = "custom software development, software development cost India, SaaS development, web development company, What is SEO, AI automation";
 $canonical_url = nectra_page_canonical('/aeo');
 
 $aeo_answers = get_aeo_answers();
@@ -70,12 +70,18 @@ output_faq_schema($all_faqs);
                         <!-- Expert Insight -->
                         <div class="p-3 rounded-3 bg-light border mb-4">
                             <h3 class="h6 fw-bold text-dark mb-1"><i class="fas fa-lightbulb text-primary me-2"></i>Expert Perspective</h3>
-                            <p class="text-muted small fst-italic mb-0">"<?php echo FOUNDER_NAME; ?>, <?php echo FOUNDER_TITLE; ?>: Based on our daily execution across 200+ accounts, sustainable search dominance comes from technical fundamentals and search intent resolution — not algorithmic shortcuts."</p>
+                            <p class="text-muted small fst-italic mb-0">"<?php echo FOUNDER_NAME; ?>, <?php echo FOUNDER_TITLE; ?>: Great products start with clear requirements, maintainable architecture, and shippable milestones — SEO and paid media amplify software that already solves a real job-to-be-done."</p>
                         </div>
 
                         <div class="d-flex flex-wrap gap-2">
                             <a href="/contact?service=<?php echo urlencode($aeo['question']); ?>" class="btn btn-sm btn-primary fw-semibold px-3 py-2">Get Strategic Consultation</a>
-                            <a href="/seo-services" class="btn btn-sm btn-outline-secondary px-3 py-2">Explore SEO Services</a>
+                            <?php
+                            $aeoServiceUrl = (strpos($key, 'seo') !== false || strpos($key, 'digital-marketing') !== false || strpos($key, 'lead') !== false)
+                                ? '/seo-services'
+                                : '/software-development-services';
+                            $aeoServiceLabel = $aeoServiceUrl === '/seo-services' ? 'Explore SEO Services' : 'Explore Software Development';
+                            ?>
+                            <a href="<?php echo htmlspecialchars($aeoServiceUrl); ?>" class="btn btn-sm btn-outline-secondary px-3 py-2"><?php echo htmlspecialchars($aeoServiceLabel); ?></a>
                         </div>
                     </article>
                     <?php endforeach; ?>

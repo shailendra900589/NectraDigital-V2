@@ -13,7 +13,7 @@ if (!defined('SITE_URL')) {
 }
 
 echo "# Nectra Digital\n\n";
-echo "> Nectra Digital is an enterprise digital growth and technology agency headquartered in India. The company specializes in technical search engine optimization (SEO), performance marketing (PPC), custom AI workflow automation, web development, and software engineering. Founded by Ravindra Kumar Chauhan, Nectra Digital operates across 20+ Indian metropolitan hubs and delivers verified growth outcomes for local, national, and international clients.\n\n";
+echo "> Nectra Digital is a custom software development company headquartered in India. The team builds SaaS platforms, web applications, mobile apps, APIs, and internal business tools — then layers AI automation, SEO, and performance marketing to launch and scale products. Founded by Ravindra Kumar Chauhan, Nectra Digital serves startups, SMEs, and enterprises across 20+ Indian cities and international markets.\n\n";
 
 echo "## Core Services\n\n";
 foreach (get_services_data() as $slug => $svc) {
@@ -37,20 +37,20 @@ foreach ($industries as $indName => $indDesc) {
 echo "\n";
 
 echo "## Company\n\n";
-echo "- [About & Founder](" . SITE_URL . "/about): Information about Nectra Digital, company history, and founder Ravindra Kumar Chauhan (" . FOUNDER_EXPERIENCE . " experience in SEO, AI, and software engineering).\n";
+echo "- [About & Founder](" . SITE_URL . "/about): Company history and founder Ravindra Kumar Chauhan (" . FOUNDER_EXPERIENCE . " in custom software development, SaaS engineering, AI automation, and SEO).\n";
 echo "- [Case Studies & Portfolio](" . SITE_URL . "/portfolio): Verified client deployments including NOVA PAY (Dubai FinTech), Oudh Organics (D2C E-commerce), and Auto-Rep (AI Voice Agent).\n";
-echo "- [Hire Dedicated Experts](" . SITE_URL . "/hire-experts): Dedicated SEO strategists, full-stack software engineers, and digital marketing teams.\n";
+echo "- [Hire Dedicated Experts](" . SITE_URL . "/hire-experts): Dedicated software engineers, full-stack developers, QA, DevOps, and growth specialists.\n";
 echo "- [Contact Support & Strategy](" . SITE_URL . "/contact): Headquarters in Lucknow, Uttar Pradesh, India with global timezone operational coverage.\n";
 echo "- [Editorial Guidelines](" . SITE_URL . "/editorial-guidelines): E-E-A-T verification standards and review methodologies.\n\n";
 
 echo "## Resources\n\n";
-echo "- [Digital Intelligence & Blog](" . SITE_URL . "/insights): Research articles, technical breakdowns, and algorithmic search analysis.\n";
+echo "- [Digital Intelligence & Blog](" . SITE_URL . "/insights): Software engineering guides, SaaS playbooks, AI automation, and SEO for product teams.\n";
 echo "- [AEO Knowledge Base](" . SITE_URL . "/aeo): Direct, verified answers optimized for generative AI search engines and answer engines.\n";
 echo "- [Free Marketing & SEO Tools](" . SITE_URL . "/tools): Diagnostic utilities and digital marketing calculators.\n\n";
 
 echo "## City Coverage (Pan-India)\n\n";
 foreach (get_cities_data() as $slug => $city) {
-    echo "- [Digital Agency " . $city['name'] . "](" . SITE_URL . "/digital-agency-" . $slug . "): Localized SEO, paid ads, and engineering services in " . $city['name'] . ", " . ($city['state'] ?? 'India') . ".\n";
+    echo "- [Software Development " . $city['name'] . "](" . SITE_URL . "/digital-agency-" . $slug . "): Custom software, web & mobile apps in " . $city['name'] . ", " . ($city['state'] ?? 'India') . " (SEO & growth optional).\n";
 }
 echo "\n";
 

@@ -11,8 +11,8 @@ $dbUnavailable = !nectra_db_is_connected();
 if (!$dbUnavailable) {
     blog_orphan_ensure_schema($conn);
 }
-$page_title = "SEO & Digital Marketing Blog | Nectra Digital Intel";
-$page_desc = "Expert SEO guides, Google algorithm updates, AI automation tips, and digital marketing strategies from India's leading SEO agency.";
+$page_title = "Software Development & Tech Growth Blog | Nectra Intel";
+$page_desc = "Engineering playbooks, SaaS and web development guides, AI automation tips, and SEO for product teams — from Nectra Digital's software development company.";
 $canonical_url = nectra_page_canonical('/insights');
 
 $page_schema = [
@@ -60,7 +60,7 @@ if (!$dbUnavailable) {
             <?php render_breadcrumbs([['name' => 'Home', 'url' => '/'], ['name' => 'Insights', 'url' => '/insights']]); ?>
             <h1 class="fw-bold text-white mb-3 nd-hero-title">Nectra <span class="nd-text-gradient">Intel</span></h1>
             <p class="lead text-white-50 mx-auto nd-prose-width" style="line-height: 1.6;">
-                Actionable SEO guides, algorithm updates, AI automation playbooks, and growth strategies for Indian and global brands.
+                Software engineering guides, SaaS playbooks, web &amp; mobile tutorials, AI automation, and SEO for product teams in India and globally.
             </p>
         </div>
     </header>

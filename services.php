@@ -5,9 +5,9 @@ require_once 'includes/service-content.php';
 require_once 'includes/i18n.php';
 require_once 'includes/eeat-copy.php';
 
-$page_title = "All Digital Services | SEO, AI Automation, Web Development India";
-$page_desc = "Complete digital services: SEO services India, local SEO, technical SEO, AI automation, Google Ads, Meta Ads, web development, software development, mobile apps, and ecommerce.";
-$page_keys = "Digital Services India, SEO Services, AI Automation, Web Development, Software Development, Digital Marketing Agency";
+$page_title = "Software Development Services India | Web, Mobile & SaaS";
+$page_desc = "Custom software development, SaaS, web & mobile apps, APIs, AI automation, and SEO — one engineering-led team. 17 specialized services from MVP to enterprise scale.";
+$page_keys = "Software Development Services India, Custom Software, SaaS Development, Web Development, Mobile App Development, API Development";
 $canonical_url = nectra_page_canonical('/services');
 $isDarkHeader = true;
 require_once __DIR__ . '/includes/nav-data.php';
@@ -54,9 +54,9 @@ include 'includes/header.php';
     <div class="svc-hero-glow"></div>
     <div class="container text-center position-relative z-1 py-2 py-md-4">
         <?php render_breadcrumbs([['name' => 'Home', 'url' => '/'], ['name' => 'Services', 'url' => '/services']]); ?>
-        <h1 class="fw-bold text-white mb-3 nd-hero-title">SEO, AI &amp; <span style="color: var(--nd-primary-blue);">Digital Growth Services</span></h1>
-        <p class="svc-hero-deck mx-auto mb-4" style="max-width: 640px;">17 specialized services — SEO, paid media, AI automation, and engineering under one roof.</p>
-        <p class="lead text-white-50 mx-auto mb-4 nd-prose-width">Search engine optimization, performance marketing, AI automation, web development, software, and mobile apps — one integrated team for measurable ROI.</p>
+        <h1 class="fw-bold text-white mb-3 nd-hero-title">Software Engineering &amp; <span style="color: var(--nd-primary-blue);">Digital Product Services</span></h1>
+        <p class="svc-hero-deck mx-auto mb-4" style="max-width: 640px;">17 specialized services — custom software, web &amp; mobile apps, AI automation, then SEO and paid growth.</p>
+        <p class="lead text-white-50 mx-auto mb-4 nd-prose-width">Build SaaS, APIs, portals, and storefronts with a team that also handles technical SEO, performance marketing, and automation when you need go-to-market support.</p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
             <a href="<?php echo nectra_nav_path('/contact?service=Consultation'); ?>" class="btn btn-primary btn-lg px-4 fw-semibold">Book Free Consultation</a>
             <a href="<?php echo nectra_nav_path('/contact?service=Free+Audit'); ?>" class="btn btn-outline-light btn-lg px-4">Get Free Audit</a>

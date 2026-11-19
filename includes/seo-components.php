@@ -70,7 +70,7 @@ function render_faq_section($faqs, $title = 'Frequently Asked Questions', $theme
 
 function render_cta_blocks($variant = 'full') {
     $ctas = [
-        ['label' => 'Get Free SEO Audit', 'url' => '/contact?service=SEO+Audit', 'icon' => 'fa-search'],
+        ['label' => 'Free Software Discovery Call', 'url' => '/contact?service=Software+Development', 'icon' => 'fa-code'],
         ['label' => 'Book Free Consultation', 'url' => '/contact?service=Consultation', 'icon' => 'fa-calendar-check'],
         ['label' => 'Request Proposal', 'url' => '/contact?service=Proposal', 'icon' => 'fa-file-alt'],
         ['label' => 'Talk To Expert', 'url' => '/contact?service=Expert+Call', 'icon' => 'fa-headset'],
@@ -108,7 +108,7 @@ function render_founder_section($compact = false) {
     echo '<h6 class="text-neon text-uppercase mb-2" style="letter-spacing:2px;">Founder & Leadership</h6>';
     echo '<h2 class="text-white h3 mb-3">' . FOUNDER_NAME . '</h2>';
     echo '<p class="text-neon small text-uppercase mb-3">' . FOUNDER_TITLE . ' · ' . FOUNDER_EXPERIENCE . ' Experience</p>';
-    echo '<p class="text-white-50">' . FOUNDER_NAME . ' founded Nectra Digital to connect complex technology with measurable business growth. With expertise in SEO, digital marketing, AI automation, and software development, he leads a founder-led team of channel specialists serving clients across India and globally.</p>';
+    echo '<p class="text-white-50">' . FOUNDER_NAME . ' founded Nectra Digital to ship custom software and digital products that scale. With expertise in SaaS engineering, web and mobile development, AI automation, and SEO, he leads a founder-led team serving clients across India and globally.</p>';
     echo '<div class="d-flex flex-wrap gap-2 mb-3">';
     foreach (FOUNDER_EXPERTISE as $skill) {
         echo '<span class="badge bg-dark border border-secondary text-white-50">' . $skill . '</span>';
@@ -125,14 +125,14 @@ function render_author_bio($compact = true) {
     echo '<div class="flex-shrink-0 rounded-circle border border-neon d-flex align-items-center justify-content-center bg-dark" style="width:60px;height:60px;"><i class="fas fa-user-tie text-neon"></i></div>';
     echo '<div><h4 class="text-dark h6 mb-1" itemprop="name">' . FOUNDER_NAME . '</h4>';
     echo '<p class="text-neon small mb-2" itemprop="jobTitle">' . FOUNDER_TITLE . '</p>';
-    echo '<p class="text-muted small mb-2" itemprop="description">SEO expert and digital strategist with ' . FOUNDER_EXPERIENCE . ' of experience. Author verified by Nectra Digital editorial team.</p>';
+    echo '<p class="text-muted small mb-2" itemprop="description">Software engineering lead and product strategist with ' . FOUNDER_EXPERIENCE . ' of experience building SaaS, web, and mobile solutions. Author verified by Nectra Digital editorial team.</p>';
     echo '<a href="' . FOUNDER_LINKEDIN . '" target="_blank" rel="noopener" class="text-neon small" itemprop="sameAs"><i class="fab fa-linkedin"></i> LinkedIn</a>';
     echo ' · <a href="/editorial-guidelines" class="text-muted small">Editorial Guidelines</a></div></div></div>';
 }
 
 function render_geo_blocks($title, $content_excerpt = '') {
     $sentences = preg_split('/(?<=[.!?])\s+/', strip_tags($content_excerpt), 3);
-    $quick = isset($sentences[0]) ? $sentences[0] : 'This article provides expert insights on ' . $title . ' from Nectra Digital, a leading SEO and digital marketing agency in India.';
+    $quick = isset($sentences[0]) ? $sentences[0] : 'This article provides expert insights on ' . $title . ' from Nectra Digital, a custom software development and digital product company in India.';
     
     echo '<div class="geo-blocks mb-5">';
     echo '<div class="p-4 border border-neon rounded bg-glass mb-4"><h2 class="text-neon h6 text-uppercase mb-2"><i class="fas fa-bolt me-2"></i>Quick Answer</h2>';
@@ -140,14 +140,14 @@ function render_geo_blocks($title, $content_excerpt = '') {
     
     echo '<div class="p-4 border rounded bg-white mb-4" style="border-color:#E2E8F0!important"><h2 class="text-dark h6 mb-3"><i class="fas fa-list-check text-primary me-2"></i>Key Takeaways</h2><ul class="text-muted small mb-0">';
     echo '<li>Actionable strategies backed by 5+ years of industry experience</li>';
-    echo '<li>Data-driven approach from Nectra Digital SEO experts</li>';
+    echo '<li>Engineering-led approach from Nectra Digital software &amp; product teams</li>';
     echo '<li>Applicable for businesses in India and global markets</li>';
     echo '<li>Updated for 2026 best practices and algorithm changes</li></ul></div>';
     
     echo '<div class="p-4 border border-secondary rounded bg-glass mb-4"><h2 class="text-dark h6 mb-2"><i class="fas fa-lightbulb text-neon me-2"></i>Expert Insight</h2>';
     $geoAuthor = function_exists('nectra_blog_byline') ? nectra_blog_byline() : FOUNDER_NAME;
     echo '<p class="text-muted small mb-2"><strong class="text-dark">' . htmlspecialchars($geoAuthor) . '</strong>, Nectra Digital editorial:</p>';
-    echo '<p class="text-muted small fst-italic mb-0">"The strategies outlined here reflect what we implement daily for clients achieving 340%+ organic growth. Focus on fundamentals first — technical SEO, content authority, and user experience — before chasing trends."</p></div>';
+    echo '<p class="text-muted small fst-italic mb-0">"The strategies outlined here reflect what we ship in production — solid architecture, secure APIs, maintainable code, and SEO-ready UX — before chasing short-lived trends."</p></div>';
     echo '</div>';
 }
 
@@ -263,7 +263,7 @@ function render_post_internal_links($conn, $post, $category) {
     
     $cities = array_slice(array_keys(get_cities_data()), 0, 3);
     foreach ($cities as $city) {
-        $links[] = ['url' => '/digital-agency-' . $city, 'title' => 'Digital Agency ' . ucfirst($city)];
+        $links[] = ['url' => '/digital-agency-' . $city, 'title' => 'Software Development ' . ucfirst($city)];
     }
     
     echo '<section class="nd-post-related py-4 mt-4 border-top w-100">';

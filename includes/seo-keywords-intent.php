@@ -228,8 +228,8 @@ function get_intent_keyword_catalog(): array
 function get_global_intent_keywords(): array
 {
     return [
-        'SEO company India', 'best SEO company India', 'digital marketing agency India',
-        'web development company India', 'AI automation services India', 'website development company',
-        'SEO services India', 'PPC agency India', 'software development company India',
+        'software development company India', 'custom software development India', 'SaaS development company India',
+        'web development company India', 'mobile app development company India', 'hire software developers India',
+        'AI automation services India', 'API development company India', 'SEO services India', 'digital marketing agency India',
     ];
 }

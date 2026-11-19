@@ -58,7 +58,7 @@ class InternalLinkEngine
             }
         }
 
-        $links[] = ['url' => '/contact?service=' . urlencode('Free SEO Audit'), 'title' => 'Get Free SEO Audit', 'type' => 'cta'];
+        $links[] = ['url' => '/contact?service=' . urlencode('Software Development'), 'title' => 'Free Software Discovery Call', 'type' => 'cta'];
         $links[] = ['url' => '/contact?service=' . urlencode('Consultation'), 'title' => 'Schedule Strategy Call', 'type' => 'cta'];
         $links[] = ['url' => '/contact?service=' . urlencode('Request Proposal'), 'title' => 'Request Proposal', 'type' => 'cta'];
 

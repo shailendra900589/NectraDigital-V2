@@ -430,7 +430,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                         <a href="/insights" class="btn btn-outline-primary btn-sm px-4">
                             <i class="fas fa-arrow-left me-2"></i> Back to Intel
                         </a>
-                        <a href="/contact" class="btn btn-nectra-primary btn-sm">Get Free SEO Audit</a>
+                        <a href="/contact?service=Software+Development" class="btn btn-nectra-primary btn-sm">Free Software Discovery Call</a>
                     </div>
 
                     <div class="mt-5 pt-4">

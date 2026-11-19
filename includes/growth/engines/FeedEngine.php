@@ -51,11 +51,11 @@ class FeedEngine
 
         foreach (get_cities_data() as $slug => $city) {
             $items[] = [
-                'title' => 'SEO & Digital Marketing Company in ' . $city['name'],
+                'title' => 'Software Development Company in ' . $city['name'],
                 'url' => SITE_URL . '/digital-agency-' . $slug,
-                'description' => 'Best SEO company and digital marketing agency in ' . $city['name'] . ', ' . $city['state'] . '. Web development, AI automation, PPC.',
+                'description' => 'Custom software, web & mobile app development in ' . $city['name'] . ', ' . $city['state'] . '. SaaS, APIs, AI automation, and SEO-ready launches.',
                 'category' => 'Locations',
-                'keywords' => 'SEO company ' . $city['name'] . ', digital marketing ' . $city['name'] . ', web development ' . $city['name'],
+                'keywords' => 'software development ' . $city['name'] . ', custom software ' . $city['name'] . ', web development ' . $city['name'],
                 'pubDate' => time() - 3600,
                 'image' => self::defaultImage(),
                 'type' => 'city',

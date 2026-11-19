@@ -70,7 +70,7 @@ output_faq_schema($city_faqs);
                 <?php echo htmlspecialchars($hubSeo['hero_intro']); ?>
             </p>
             <div class="d-flex flex-wrap gap-3">
-                <a href="/contact?city=<?php echo urlencode($city_name); ?>" class="btn btn-primary btn-lg px-4 fw-semibold">Get Free SEO Audit in <?php echo htmlspecialchars($city_name); ?></a>
+                <a href="/contact?city=<?php echo urlencode($city_name); ?>&amp;service=Software+Development" class="btn btn-primary btn-lg px-4 fw-semibold">Free Software Consultation in <?php echo htmlspecialchars($city_name); ?></a>
                 <a href="/contact?service=Consultation&amp;city=<?php echo urlencode($city_name); ?>" class="btn btn-outline-light btn-lg px-4">Book Free Consultation</a>
             </div>
         </div>
@@ -212,7 +212,7 @@ output_faq_schema($city_faqs);
     </section>
 
     <!-- FAQS & CTAS -->
-    <?php render_faq_section($city_faqs, "SEO & Digital Marketing FAQ — {$city_name}"); ?>
+    <?php render_faq_section($city_faqs, "Software Development & Growth FAQ — {$city_name}"); ?>
     <?php include __DIR__ . '/includes/ui/cta.php'; ?>
     <?php include __DIR__ . '/includes/ui/author-box.php'; ?>
 </main>

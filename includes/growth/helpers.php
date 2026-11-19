@@ -110,7 +110,7 @@ function ge_build_landing_slug(string $url_prefix, string $city_slug, ?array $ex
 
 function ge_default_ctas(): array {
     return [
-        ['label' => 'Get Free SEO Audit', 'url' => '/contact?service=SEO+Audit', 'icon' => 'fa-search'],
+        ['label' => 'Free Software Discovery Call', 'url' => '/contact?service=Software+Development', 'icon' => 'fa-code'],
         ['label' => 'Get Free Consultation', 'url' => '/contact?service=Consultation', 'icon' => 'fa-calendar-check'],
         ['label' => 'Request Proposal', 'url' => '/contact?service=Proposal', 'icon' => 'fa-file-alt'],
         ['label' => 'Talk To Expert', 'url' => '/contact?service=Expert+Call', 'icon' => 'fa-headset'],
@@ -124,7 +124,7 @@ function ge_trim_seo_title(string $title, string $brand = 'Nectra Digital', int 
 {
     $title = trim(preg_replace('/\s+/u', ' ', $title));
     if ($title === '') {
-        $title = 'Best SEO Company India';
+        $title = 'Software Development Company India';
     }
 
     $suffix = ' | ' . $brand;
@@ -217,10 +217,10 @@ function ge_seo_title_variants(string $core): array
         $city = trim($m[1]);
         if (strcasecmp($city, 'India') !== 0) {
             $variants = [
-                "Best SEO Company in {$city} India",
-                "Best SEO Agency in {$city} India",
-                "Top SEO Services in {$city} India",
-                "Best SEO in {$city} India Agency",
+                "Software Development Company in {$city} India",
+                "Custom Software Development {$city} India",
+                "Web & App Development Company {$city}",
+                "SaaS Development Company {$city} India",
                 $core,
             ];
             return array_unique($variants);
@@ -228,10 +228,10 @@ function ge_seo_title_variants(string $core): array
     }
 
     $variants = [
-        'Best SEO & Digital Marketing in India',
-        'Best SEO Company in India Agency',
-        'Top SEO Agency India · Digital Marketing',
-        'Best SEO Services Company India',
+        'Custom Software Development Company India',
+        'Software Development Company India Agency',
+        'SaaS & Web App Development India',
+        'Top Software Developers India · Nectra',
         $core . ' India',
         $core . ' Agency',
         $core . ' Services',
@@ -239,8 +239,8 @@ function ge_seo_title_variants(string $core): array
     ];
 
     if (stripos($core, 'contact') !== false) {
-        $variants[] = 'Contact Nectra Digital SEO India HQ';
-        $variants[] = 'Contact Nectra Digital · SEO India';
+        $variants[] = 'Contact Nectra Digital Software India HQ';
+        $variants[] = 'Contact Nectra Digital · Custom Software';
     }
 
     return array_unique($variants);
@@ -269,7 +269,7 @@ function ge_trim_seo_description(string $desc, int $min = 120, int $max = 160): 
     }
 
     if (mb_strlen($desc) < $min) {
-        $pad = ' Free SEO audit & consultation.';
+        $pad = ' Free software discovery call.';
         if (mb_strlen($desc . $pad) <= $max) {
             $desc .= $pad;
         }

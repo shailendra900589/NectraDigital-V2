@@ -50,13 +50,14 @@ function ge_city_hub_seo(array $city, string $citySlug): array
     $state = $city['state'] ?? '';
     $canonical = ge_city_hub_url($citySlug);
 
-    $pageTitle = ge_trim_seo_title("Digital Agency in {$name} | Nectra Digital", 'Nectra Digital', 30, 60);
-    $pageDesc = ge_trim_seo_description("Nectra Digital helps businesses in {$name}, {$state} grow with SEO, paid media, web development, and AI automation. Free audit and custom proposal.");
+    $pageTitle = ge_trim_seo_title("Software Development Company in {$name}", 'Nectra Digital', 30, 60);
+    $pageDesc = ge_trim_seo_description("Custom software, SaaS, web & mobile apps in {$name}, {$state}. APIs, AI automation, and SEO-ready launches from Nectra Digital. Free discovery call.");
     $pageKeys = implode(', ', array_unique([
-        "digital marketing agency {$name}",
-        "SEO services {$name}",
+        "software development company {$name}",
+        "custom software {$name}",
+        "SaaS development {$name}",
         "web development {$name}",
-        "PPC agency {$name}",
+        "mobile app development {$name}",
         "AI automation {$name}",
     ]));
 
@@ -71,9 +72,9 @@ function ge_city_hub_seo(array $city, string $citySlug): array
         'page_desc' => $pageDesc,
         'page_keys' => $pageKeys,
         'canonical_url' => $canonical,
-        'h1' => "Digital Marketing Agency in {$name}",
-        'hero_label' => !empty($city['is_hq']) ? 'Global Headquarters' : 'Local Operations',
-        'hero_intro' => "Grow traffic, leads, and revenue in {$name}, {$state} with SEO, Google Ads, social media, web development, and AI automation — delivered by a dedicated Nectra Digital team with transparent reporting.",
+        'h1' => "Software Development Company in {$name}",
+        'hero_label' => !empty($city['is_hq']) ? 'Global Headquarters' : 'Local Engineering Team',
+        'hero_intro' => "Custom software, web &amp; mobile apps for teams in {$name}, {$state} — plus SEO, AI automation, and paid media when you need go-to-market support from one Nectra Digital squad.",
         'breadcrumbs' => $breadcrumbs,
         'og_type' => 'website',
     ];
@@ -127,7 +128,7 @@ function ge_service_city_seo(
     }
     $intro = $introCore . " Serving businesses in {$cityName}, {$cityState} with local market expertise.";
 
-    $quickAnswer = "Nectra Digital is a trusted {$silo} company in {$cityName}, {$cityState} — offering strategy, execution, and reporting with 200+ projects delivered and 340%+ average traffic growth.";
+    $quickAnswer = "Nectra Digital is a software development and {$silo} partner in {$cityName}, {$cityState} — 200+ products shipped with engineering, transparent delivery, and optional SEO and growth support.";
 
     require_once __DIR__ . '/seo-components.php';
     $servicePath = ge_service_city_landing_url($serviceSlug, $citySlug);
@@ -160,12 +161,12 @@ function ge_city_hub_faqs(array $city, string $citySlug): array
 
     return [
         [
-            'q' => "Why choose Nectra Digital for SEO in {$cityName}?",
-            'a' => "Nectra Digital delivers proven SEO results for {$cityName} businesses with local keyword targeting, Google Business Profile optimization, and city-specific content strategies tailored to your market.",
+            'q' => "Why choose Nectra Digital for software development in {$cityName}?",
+            'a' => "We build custom SaaS, web and mobile apps for {$cityName} teams with Agile delivery, clean architecture, and full source-code ownership — plus SEO-ready launches when you need user acquisition.",
         ],
         [
-            'q' => "What digital marketing services do you offer in {$cityName}?",
-            'a' => "We offer SEO, local SEO, Google Ads, Meta Ads, social media marketing, AI automation, web development, software development, and lead generation — all customized for the {$cityName} market.",
+            'q' => "What services do you offer in {$cityName}?",
+            'a' => "Core focus: custom software development, web and mobile apps, SaaS engineering, APIs, and AI automation. Supporting services include SEO, local SEO, Google Ads, social media, and digital marketing for the {$cityName} market.",
         ],
         [
             'q' => "Do you have an office in {$cityName}?",
@@ -174,8 +175,8 @@ function ge_city_hub_faqs(array $city, string $citySlug): array
                 : "We serve {$cityName} with dedicated account managers, video consultations, and on-site meetings when required. HQ: Lucknow, pan-India operations.",
         ],
         [
-            'q' => "How much do SEO services cost in {$cityName}?",
-            'a' => "SEO packages for {$cityName} businesses typically start from " . ge_city_seo_price_range($city, $citySlug) . ". Competitive industries may need higher investment. We provide a free audit with custom pricing before you commit.",
+            'q' => "How much does custom software development cost in {$cityName}?",
+            'a' => "MVPs and focused tools often start around ₹2–5 lakh; larger SaaS or enterprise builds range higher based on scope. We share a fixed-scope proposal after a free discovery call for {$cityName} projects.",
         ],
         [
             'q' => "How quickly can you start a project in {$cityName}?",

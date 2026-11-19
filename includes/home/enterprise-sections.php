@@ -7,7 +7,7 @@ require_once dirname(__DIR__) . '/ui/section-head.php';
     <div class="container">
         <?php nd_render_section_head(
             'Engineered Solutions for Modern Businesses',
-            'We unite software engineering, organic visibility, and machine learning automations into a unified growth engine.',
+            'Software engineering first — then SEO, paid media, and AI automation on the products we build for you.',
             'center'
         ); ?>
         <div class="row g-4" data-nd-stagger>
@@ -88,8 +88,8 @@ require_once dirname(__DIR__) . '/ui/section-head.php';
             <?php
             $home_services = get_services_data();
             $featured_slugs = [
-                'seo-services', 'performance-marketing-services', 'ai-automation-services',
-                'web-development-services', 'local-seo-services', 'software-development-services',
+                'software-development-services', 'web-development-services', 'mobile-app-development',
+                'ai-automation-services', 'seo-services', 'ecommerce-development',
             ];
             foreach ($featured_slugs as $slug):
                 if (!isset($home_services[$slug])) continue;

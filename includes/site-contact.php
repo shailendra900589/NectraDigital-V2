@@ -58,7 +58,7 @@ function get_home_local_business_schema(): array
         '@type' => 'LocalBusiness',
         '@id' => SITE_URL . '/#localbusiness',
         'name' => 'Nectra Digital',
-        'description' => 'Best SEO company in India offering search engine optimization, digital marketing, AI automation, and software development.',
+        'description' => 'Custom software development company in India building SaaS, web and mobile apps, with AI automation, SEO, and digital marketing for product growth.',
         'url' => SITE_URL . '/',
         'telephone' => NECTRA_PHONE_E164,
         'email' => nectra_schema_email(),

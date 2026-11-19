@@ -5,9 +5,9 @@ require_once 'includes/i18n.php';
 require_once 'includes/eeat-copy.php';
 require_once 'includes/nav-data.php';
 
-$page_title = "About Nectra Digital | SEO & Digital Marketing Agency India";
-$page_desc = "Meet Nectra Digital — SEO, AI automation, and full-stack digital agency in Lucknow serving 200+ clients across India and globally with measurable growth.";
-$page_keys = "About Nectra Digital, SEO company India, digital marketing agency Lucknow, AI automation agency";
+$page_title = "About Nectra Digital | Software Development Company India";
+$page_desc = "Meet Nectra Digital — custom software, web & mobile engineering company in Lucknow. 200+ products shipped with Agile delivery, full code ownership, and growth-ready launches.";
+$page_keys = "About Nectra Digital, software development company India, custom software Lucknow, SaaS development agency";
 $isDarkHeader = true;
 $canonical_url = nectra_page_canonical('/about');
 
@@ -28,9 +28,9 @@ include 'includes/header.php';
         <div class="nd-page-hero-glow" aria-hidden="true"></div>
         <div class="container position-relative z-1 py-2 py-md-3">
             <?php render_breadcrumbs([['name' => 'Home', 'url' => '/'], ['name' => 'About', 'url' => '/about']]); ?>
-            <h1 class="fw-bold text-white mb-3 nd-hero-title">About Nectra Digital — <span class="nd-text-gradient">Growth Partner</span></h1>
+            <h1 class="fw-bold text-white mb-3 nd-hero-title">About Nectra Digital — <span class="nd-text-gradient">Software &amp; Product Partner</span></h1>
             <p class="lead text-white-50 mx-auto nd-prose-width" style="line-height: 1.6;">
-                A founder-led SEO and digital marketing agency combining search expertise, AI automation, and custom software to deliver compounding organic traffic and revenue for brands in India and worldwide.
+                A founder-led software development company combining SaaS engineering, web and mobile apps, AI automation, and SEO — so products you ship are fast, secure, and built to acquire users in India and worldwide.
             </p>
         </div>
     </header>

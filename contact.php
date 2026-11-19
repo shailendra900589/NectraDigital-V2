@@ -11,8 +11,8 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-$page_title = "Contact Nectra Digital | Free SEO Audit & Consultation";
-$page_desc = "Contact Nectra Digital for SEO, digital marketing, AI automation, and development. Free audit and strategy call — we respond within one business day.";
+$page_title = "Contact Nectra Digital | Software Development Consultation";
+$page_desc = "Contact Nectra Digital for custom software, SaaS, web and mobile apps, APIs, and AI automation — plus SEO and growth when you need launch support. Free discovery call; reply within one business day.";
 $isDarkHeader = true;
 $canonical_url = nectra_page_canonical('/contact');
 

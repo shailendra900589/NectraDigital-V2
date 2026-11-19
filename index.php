@@ -13,9 +13,9 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-$page_title = 'SEO & Digital Marketing Agency India | Nectra Digital';
-$page_desc = 'Nectra Digital — SEO, performance marketing, AI automation, web & software development. 200+ projects, 340% avg. growth. Free audit & strategy call.';
-$page_keys = 'SEO Company India, search engine optimization India, SEO services India, digital marketing agency India, AI automation, software development company India';
+$page_title = 'Software Development Company India | Web, Mobile & SaaS | Nectra Digital';
+$page_desc = 'Nectra Digital builds custom software, SaaS, web & mobile apps for India and global clients. Agile engineering, secure APIs, SEO-ready launches — 200+ products shipped.';
+$page_keys = 'software development company India, custom software development, SaaS development India, web development company, mobile app development, software engineering agency India';
 $canonical_url = nectra_page_canonical('/');
 $isDarkHeader = true;
 
@@ -56,21 +56,21 @@ include __DIR__ . '/includes/home/enterprise-sections.php';
     <div class="container">
         <div class="row g-5 align-items-start">
             <div class="col-lg-7">
-                <h2 class="h3 fw-bold text-white mb-4">Grow Organic Traffic &amp; <span class="nd-text-gradient">Qualified Leads</span></h2>
-                <p class="text-white-50">Nectra Digital is a full-service agency helping brands in India and worldwide improve Google visibility, run profitable ad campaigns, and build websites and apps that convert. Our <a href="<?php echo nectra_nav_path('/seo-services'); ?>" class="text-tech-blue text-decoration-none">SEO services</a> cover technical audits, content strategy, local SEO, and link building.</p>
-                <p class="text-white-50">We manage <a href="<?php echo nectra_nav_path('/performance-marketing-services'); ?>" class="text-tech-blue text-decoration-none">performance marketing</a>, <a href="<?php echo nectra_nav_path('/social-media-marketing-services'); ?>" class="text-tech-blue text-decoration-none">social media marketing</a>, and <a href="<?php echo nectra_nav_path('/software-development-services'); ?>" class="text-tech-blue text-decoration-none">custom software</a> when your growth plan needs engineering.</p>
+                <h2 class="h3 fw-bold text-white mb-4">Build Products That <span class="nd-text-gradient">Scale &amp; Rank</span></h2>
+                <p class="text-white-50">Nectra Digital is a <a href="<?php echo nectra_nav_path('/software-development-services'); ?>" class="text-tech-blue text-decoration-none">software development company</a> that ships SaaS platforms, internal tools, APIs, and customer-facing apps — then layers <a href="<?php echo nectra_nav_path('/seo-services'); ?>" class="text-tech-blue text-decoration-none">SEO</a>, <a href="<?php echo nectra_nav_path('/web-development-services'); ?>" class="text-tech-blue text-decoration-none">web development</a>, and <a href="<?php echo nectra_nav_path('/ai-automation-services'); ?>" class="text-tech-blue text-decoration-none">AI automation</a> when you need measurable growth.</p>
+                <p class="text-white-50">One squad owns discovery, engineering, QA, deployment, and post-launch optimization so you are not juggling separate vendors for code and marketing.</p>
                 <ul class="text-white-50">
-                    <li class="mb-2"><strong class="text-white">Proven SEO results</strong> — 5+ years, 200+ projects, 340% average traffic growth</li>
-                    <li class="mb-2"><strong class="text-white">Integrated marketing &amp; tech</strong> — SEO, ads, social, AI, and development under one roof</li>
-                    <li class="mb-2"><strong class="text-white">Local SEO in 20+ cities</strong> — <a href="<?php echo nectra_nav_path('/local-seo-services'); ?>" class="text-tech-blue text-decoration-none">map pack rankings</a></li>
+                    <li class="mb-2"><strong class="text-white">Engineering-first delivery</strong> — Python, Laravel, React, Next.js, cloud-native architecture</li>
+                    <li class="mb-2"><strong class="text-white">200+ projects shipped</strong> — MVPs, enterprise portals, mobile apps, marketplaces</li>
+                    <li class="mb-2"><strong class="text-white">Growth-ready launches</strong> — technical SEO, Core Web Vitals, analytics, and conversion paths built in</li>
                 </ul>
             </div>
             <div class="col-lg-5">
                 <?php render_nap_block('home'); ?>
                 <div class="nd-card nd-card-dark p-4 mt-4">
-                    <h3 class="h6 text-white mb-2">Free SEO Audit</h3>
-                    <p class="text-white-50 small mb-3">Technical SEO review, competitor snapshot, and priority fixes.</p>
-                    <a href="<?php echo nectra_nav_path('/contact?service=SEO+Audit'); ?>" class="btn btn-nectra-primary btn-sm w-100 nd-btn-motion"><i class="fas fa-search me-1"></i>Request Free Audit</a>
+                    <h3 class="h6 text-white mb-2">Free Product &amp; SEO Review</h3>
+                    <p class="text-white-50 small mb-3">Architecture snapshot, speed checks, and a prioritized build + visibility plan.</p>
+                    <a href="<?php echo nectra_nav_path('/contact?service=Book+Consultation'); ?>" class="btn btn-nectra-primary btn-sm w-100 nd-btn-motion"><i class="fas fa-search me-1"></i>Book Free Consultation</a>
                 </div>
             </div>
         </div>
@@ -81,7 +81,7 @@ include __DIR__ . '/includes/home/enterprise-sections.php';
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="h3 text-white">Answer Engine <span class="nd-text-gradient">Optimized</span> Insights</h2>
-            <p class="text-white-50 small">Direct answers optimized for Google AI Overviews, ChatGPT, and Perplexity.</p>
+            <p class="text-white-50 small">Direct answers on software development, SaaS, and growth — optimized for Google AI Overviews, ChatGPT, and Perplexity.</p>
         </div>
         <div class="row g-4">
             <?php foreach (array_slice(get_aeo_answers(), 0, 3, true) as $key => $aeo): ?>
@@ -103,7 +103,7 @@ include __DIR__ . '/includes/home/enterprise-sections.php';
 <section class="nd-section">
     <div class="container text-center">
         <h2 class="nd-section-title">Serving Businesses Across <span class="text-primary-blue">India</span></h2>
-        <p class="text-muted small mb-4">Local SEO and digital engineering in 20+ cities</p>
+        <p class="text-muted small mb-4">Software engineering &amp; digital delivery in 20+ cities across India</p>
         <div class="d-flex flex-wrap justify-content-center gap-2 nd-city-chips" data-nd-stagger>
             <?php foreach (get_cities_data() as $slug => $c): ?>
             <a href="<?php echo nectra_nav_path('/digital-agency-' . $slug); ?>" class="btn btn-sm btn-outline-secondary rounded-pill"><?php echo htmlspecialchars($c['name']); ?></a>
@@ -118,8 +118,8 @@ include __DIR__ . '/includes/home/enterprise-sections.php';
     <div class="container">
         <div class="nd-contact-shell">
             <header class="nd-contact-head text-center">
-                <h2 id="contact-heading" class="nd-section-title">Ready to Dominate Search?</h2>
-                <p class="text-muted mb-0 nd-section-sub">Request a free SEO audit and custom growth plan — we respond within 24 hours.</p>
+                <h2 id="contact-heading" class="nd-section-title">Ready to Build Your Next Product?</h2>
+                <p class="text-muted mb-0 nd-section-sub">Tell us your software, web, or mobile goals — we reply within 24 hours with next steps.</p>
             </header>
             <div class="nd-contact-panel">
                 <form id="contactForm" class="nd-ajax-form">
@@ -157,6 +157,6 @@ include __DIR__ . '/includes/home/enterprise-sections.php';
 </section>
 
 <?php
-render_faq_section(get_homepage_faqs(), 'SEO & Digital Marketing FAQ');
+render_faq_section(get_homepage_faqs(), 'Software Development & Digital Growth FAQ');
 render_cta_blocks();
 include 'includes/footer.php';

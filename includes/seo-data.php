@@ -14,9 +14,8 @@ define('FOUNDER_LINKEDIN', 'https://www.linkedin.com/in/ravindra-kumar-chauhan')
 define('FOUNDER_IMAGE', SITE_URL . '/assets/images/founder.jpg');
 
 define('FOUNDER_EXPERTISE', [
-    'SEO', 'Digital Marketing', 'AI Automation', 'Web Development',
-    'Software Development', 'Performance Marketing', 'Local SEO',
-    'Technical SEO', 'Lead Generation'
+    'Software Development', 'SaaS Engineering', 'Web Development', 'Mobile Apps',
+    'AI Automation', 'API Integration', 'SEO', 'Technical SEO', 'Digital Marketing',
 ]);
 
 function get_founder_schema() {
@@ -29,7 +28,7 @@ function get_founder_schema() {
         'url' => SITE_URL . '/about',
         'sameAs' => [FOUNDER_LINKEDIN],
         'knowsAbout' => FOUNDER_EXPERTISE,
-        'description' => FOUNDER_NAME . ' is the ' . FOUNDER_TITLE . ' of Nectra Digital with ' . FOUNDER_EXPERIENCE . ' of experience in SEO, digital marketing, AI automation, and software development.'
+        'description' => FOUNDER_NAME . ' is the ' . FOUNDER_TITLE . ' of Nectra Digital with ' . FOUNDER_EXPERIENCE . ' of experience in custom software development, web and mobile engineering, AI automation, and search-led growth.'
     ];
 }
 
@@ -40,7 +39,7 @@ function get_organization_schema() {
         'name' => 'Nectra Digital',
         'url' => SITE_URL,
         'logo' => SITE_URL . '/assets/images/logo.png',
-        'description' => 'Nectra Digital is a software development, website design & development, and mobile app development company in India, with AI automation and digital marketing support for growing businesses.',
+        'description' => 'Nectra Digital is a custom software development company in India building SaaS, web applications, mobile apps, and APIs — with AI automation, SEO, and digital marketing to launch and scale products.',
         'email' => 'contact@nectradigital.com',
         'telephone' => '+917678387759',
         'foundingDate' => '2020',
@@ -67,9 +66,9 @@ function get_organization_schema() {
         ],
         'areaServed' => ['IN', 'US', 'GB', 'AE', 'CA'],
         'knowsAbout' => [
-            'Search Engine Optimization', 'Local SEO', 'Technical SEO',
-            'AI Automation', 'Digital Marketing', 'Web Development',
-            'Software Development', 'Lead Generation', 'Performance Marketing'
+            'Software Development', 'SaaS Development', 'Web Application Development',
+            'Mobile Application Development', 'API Development', 'Cloud Software',
+            'AI Automation', 'Search Engine Optimization', 'Technical SEO', 'Digital Marketing'
         ]
     ];
 }
@@ -122,7 +121,7 @@ function get_review_schema() {
                 '@type' => 'Review',
                 'author' => ['@type' => 'Person', 'name' => 'Amit K.'],
                 'reviewRating' => ['@type' => 'Rating', 'ratingValue' => '5', 'bestRating' => '5'],
-                'reviewBody' => 'Best SEO company in India for enterprise clients. Professional, data-driven, and ROI-focused digital marketing agency.'
+                'reviewBody' => 'They delivered our enterprise SaaS portal on time with solid architecture and documentation. A reliable software development partner in India.'
             ]
         ]
     ];
@@ -323,9 +322,9 @@ function get_services_data() {
             'silo' => 'Web Development'
         ],
         'software-development-services' => [
-            'title' => 'Custom Software Development Company | Nectra Digital',
-            'h1' => 'Custom Software Development Company for Modern Businesses',
-            'meta_desc' => 'Leading software development company building custom SaaS, enterprise software, and API solutions. Python, React, Laravel development by experienced engineers.',
+            'title' => 'Custom Software Development Company India | Nectra Digital',
+            'h1' => 'Custom Software Development Company for SaaS, Web & Enterprise',
+            'meta_desc' => 'Top software development company in India — custom SaaS, enterprise apps, APIs & integrations. Python, Laravel, React, Next.js. Agile delivery, full code ownership, NDA.',
             'keywords' => 'Software Development Company, Custom Software Development, Python Development Company, SaaS Development, Enterprise Software',
             'icon' => 'fa-laptop-code',
             'intro' => 'Transform business ideas into robust software products. Our software development company builds custom SaaS platforms, enterprise applications, APIs, and integrations using modern tech stacks.',
@@ -462,16 +461,35 @@ function get_cities_data() {
 
 function get_homepage_faqs() {
     return [
-        ['q' => 'Why is Nectra Digital considered the best SEO company in India?', 'a' => 'Nectra Digital combines 5+ years of proven SEO expertise with AI-powered analytics, technical SEO mastery, and a data-driven approach that has delivered 340%+ organic traffic growth for clients. We offer transparent reporting, dedicated strategists, and end-to-end digital solutions.'],
-        ['q' => 'What services does Nectra Digital offer?', 'a' => 'We offer SEO services, local SEO, technical SEO, enterprise SEO, digital marketing, PPC management, Google Ads, Meta Ads, AI automation, AI chatbot development, WhatsApp AI bots, web development, software development, mobile app development, and ecommerce development.'],
-        ['q' => 'How much does SEO cost in India?', 'a' => 'SEO packages in India typically range from ₹15,000 to ₹1,00,000+ per month depending on competition, website size, and goals. Nectra Digital offers customized packages starting with a free SEO audit to determine the optimal investment for your business.'],
+        ['q' => 'What software does Nectra Digital build?', 'a' => 'We build custom SaaS platforms, internal business tools, CRM/ERP modules, booking systems, marketplaces, customer portals, REST/GraphQL APIs, and mobile apps for Android and iOS — using Python, Laravel, React, and Next.js.'],
+        ['q' => 'Why choose Nectra Digital as a software development company in India?', 'a' => 'You get one team for engineering and growth: Agile delivery with weekly demos, full source-code ownership, NDA protection, and optional SEO, paid media, and AI automation so your product launches ready to acquire users.'],
+        ['q' => 'What services does Nectra Digital offer?', 'a' => 'Core focus: custom software development, web development, mobile app development, SaaS engineering, and API integration. Supporting services include AI automation, chatbots, SEO, local SEO, technical SEO, digital marketing, PPC, and ecommerce development.'],
+        ['q' => 'How much does custom software development cost in India?', 'a' => 'MVPs and focused tools often start around ₹2–5 lakh; full SaaS or enterprise platforms typically range from ₹8 lakh to ₹25 lakh+ depending on scope, integrations, and timelines. We provide a fixed-scope proposal after discovery.'],
         ['q' => 'Do you serve clients outside India?', 'a' => 'Yes. While headquartered in Lucknow, India, Nectra Digital serves clients globally across USA, UK, UAE, Canada, and Australia with timezone-flexible communication.'],
-        ['q' => 'How do I get started with Nectra Digital?', 'a' => 'Book a free consultation through our contact page. We\'ll audit your current digital presence, identify growth opportunities, and propose a customized strategy with clear timelines and expected ROI.'],
+        ['q' => 'How do I get started with Nectra Digital?', 'a' => 'Book a free consultation through our contact page. We map requirements, suggest an architecture, and share a phased plan with milestones, timelines, and expected outcomes.'],
     ];
 }
 
 function get_aeo_answers() {
     return [
+        'custom-software-development' => [
+            'question' => 'What is custom software development?',
+            'quick_answer' => 'Custom software development is building applications tailored to your workflows — SaaS products, internal tools, APIs, and integrations — instead of forcing your business into off-the-shelf software.',
+            'detailed' => 'A software development company analyzes requirements, designs architecture, develops with modern stacks (e.g. Python, Laravel, React), tests, deploys to cloud, and maintains the product. Custom builds reduce manual work, improve security for your data model, and scale with your revenue.',
+            'keywords' => 'custom software development, software development company India, bespoke software, SaaS development'
+        ],
+        'software-dev-cost-india' => [
+            'question' => 'How much does software development cost in India?',
+            'quick_answer' => 'Custom software in India commonly ranges from about ₹2 lakh for small MVPs to ₹25 lakh+ for enterprise SaaS, depending on features, integrations, and compliance needs.',
+            'detailed' => 'Cost drivers include number of user roles, payment or CRM integrations, mobile apps, admin dashboards, SLAs, and ongoing support. Nectra Digital provides phased estimates after a discovery workshop so you can launch an MVP first and expand iteratively.',
+            'keywords' => 'software development cost India, custom software pricing, SaaS development cost'
+        ],
+        'best-software-development-company-india' => [
+            'question' => 'Best software development company in India?',
+            'quick_answer' => 'Nectra Digital is a leading custom software development company in India — building SaaS, web apps, mobile apps, and APIs with Agile delivery, source-code ownership, and optional SEO and growth services.',
+            'detailed' => 'Evaluate portfolio depth, tech stack expertise (Python, Laravel, React, Next.js), communication cadence, security practices, and post-launch support. Nectra Digital has shipped 200+ projects for startups and enterprises across India and global markets.',
+            'keywords' => 'best software development company India, custom software India, SaaS development company'
+        ],
         'what-is-seo' => [
             'question' => 'What is SEO?',
             'quick_answer' => 'SEO (Search Engine Optimization) is the practice of optimizing websites to rank higher in search engine results pages (SERPs) organically, driving qualified traffic without paid advertising.',
@@ -513,6 +531,10 @@ function get_aeo_answers() {
 
 function get_content_silos() {
     return [
+        'Software Development' => [
+            'pillar' => 'Custom Software Development Guide for Startups & SMEs',
+            'clusters' => ['SaaS Development Roadmap', 'API Design Best Practices', 'Agile vs Waterfall', 'Cloud Architecture Patterns', 'Software Security Essentials']
+        ],
         'SEO' => [
             'pillar' => 'Complete Guide to SEO in India 2026',
             'clusters' => ['Technical SEO Checklist', 'Local SEO Strategy', 'Link Building Guide', 'Keyword Research Methods', 'SEO for Ecommerce', 'Enterprise SEO Playbook']
@@ -528,10 +550,6 @@ function get_content_silos() {
         'Web Development' => [
             'pillar' => 'Modern Web Development: Technologies & Best Practices',
             'clusters' => ['Next.js vs WordPress', 'Website Speed Optimization', 'Responsive Design Guide', 'Web Accessibility Standards', 'Headless CMS Architecture']
-        ],
-        'Software Development' => [
-            'pillar' => 'Custom Software Development Guide for Startups',
-            'clusters' => ['SaaS Development Roadmap', 'API Design Best Practices', 'Agile vs Waterfall', 'Cloud Architecture Patterns', 'Software Security Essentials']
         ],
         'Lead Generation' => [
             'pillar' => 'Lead Generation Strategies That Actually Work',

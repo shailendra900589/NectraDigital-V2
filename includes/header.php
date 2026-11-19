@@ -27,8 +27,8 @@ if (!headers_sent()) {
     header('Link: <' . $canonical_href . '>; rel="canonical"', false);
 }
 
-$default_title = "Best SEO & Digital Marketing in India | Nectra Digital";
-$default_desc  = "Best SEO company in India — search engine optimization, AI automation, digital marketing & software development. 200+ projects. Free audit.";
+$default_title = "Custom Software Development Company India | Nectra Digital";
+$default_desc  = "Software development company in India — custom SaaS, web & mobile apps, APIs, and AI automation. SEO-ready architecture. 200+ projects. Free consultation.";
 $default_img   = SITE_URL . "/assets/images/logo.png";
 
 $site_name_safe = defined('SITE_NAME') ? SITE_NAME : 'Nectra Digital';
@@ -124,7 +124,7 @@ $meta_og_type = (!empty($og_type)) ? $og_type : 'website';
     <meta property="og:description" content="<?php echo nectra_display_text($meta_desc); ?>" />
     <meta property="og:url" content="<?php echo htmlspecialchars($canonical_href); ?>" />
     <meta property="og:image" content="<?php echo htmlspecialchars($meta_img); ?>" />
-    <meta property="og:image:alt" content="<?php echo $site_name_safe; ?> - SEO & Digital Marketing Agency India" />
+    <meta property="og:image:alt" content="<?php echo $site_name_safe; ?> - Software Development & Digital Engineering India" />
     <meta property="og:locale" content="en_IN" />
     <meta property="og:locale:alternate" content="hi_IN" />
     <meta property="og:locale:alternate" content="bn_IN" />
