@@ -177,8 +177,10 @@ $post_inline_ad_units = $adPlan['inline_units'];
 $post_header_ad_html = $adPlan['header_html'];
 $post_mid_ad_html = $adPlan['mid_html'] ?? '';
 $post_footer_ad_html = $adPlan['footer_html'] ?? '';
-$has_sidebar = $sidebar_ad_count > 0;
-$main_col_class = $has_sidebar ? 'col-lg-8 nd-post-main-col' : 'col-12 nd-post-main-col';
+/* Right rail: Quick Answer / Takeaways / Expert Insight + sponsored units */
+$has_sidebar = true;
+$main_col_class = 'col-lg-8 nd-post-main-col';
+$content_plain_for_geo = strip_tags($post['content']);
 $inline_ad_paragraph_gap = $is_orphan_post ? 1 : 2;
 $GLOBALS['nectra_ads_prune_script'] = true;
 
@@ -343,7 +345,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
     .ad-container ins.adsbygoogle { display: block; min-height: 90px; }
     .sidebar-ad-code ins.adsbygoogle { display: block; min-height: 0; }
 </style>
-<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=4">
+<link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/ads-display.css?v=5">
 
 <main>
     <header class="post-hero-header text-center">
@@ -376,18 +378,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
             <div class="row justify-content-center"><div class="col-12"><?php echo $post_header_ad_html; ?></div></div>
             <?php endif; ?>
 
-            <div class="row mt-4 align-items-start g-4<?php echo $has_sidebar ? ' nd-post-row-with-sidebar' : ''; ?>">
+            <div class="row mt-4 align-items-start g-4 nd-post-row-with-sidebar">
                 <div class="<?php echo $main_col_class; ?>">
                     <?php if(!empty($display_img)): ?>
                     <div class="mb-5 rounded overflow-hidden border border-secondary shadow-lg position-relative" style="z-index: 3;">
                         <img src="<?php echo $display_img; ?>" alt="<?php echo nectra_display_text($decoded_title); ?>" class="img-fluid w-100 d-block">
                     </div>
                     <?php endif; ?>
-
-                    <?php
-                        $content_plain = strip_tags($post['content']);
-                        render_geo_blocks($decoded_title, $content_plain);
-                    ?>
 
                     <div class="blog-content nd-rich-text">
                         <?php
@@ -397,14 +394,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_comment'])) {
                     </div>
                 </div>
 
-                <?php if ($has_sidebar): ?>
                 <div class="col-lg-4 nd-post-sidebar-col">
-                    <aside class="sidebar-ad-column sticky-lg-top" style="top: 96px;" aria-label="Sponsored content">
-                        <h6 class="text-uppercase small mb-3 border-bottom pb-2 text-center fw-semibold nd-post-sponsored-heading">Sponsored</h6>
-                        <?php echo $sidebar_ad_html; ?>
+                    <aside class="nd-post-sidebar-rail sidebar-ad-column sticky-lg-top" style="top: 96px;" aria-label="Article summary and sponsored content">
+                        <?php render_geo_blocks($decoded_title, $content_plain_for_geo, 'sidebar'); ?>
+                        <?php if ($sidebar_ad_count > 0 && $sidebar_ad_html !== ''): ?>
+                        <div class="nd-post-sidebar-sponsored">
+                            <h6 class="text-uppercase small mb-3 mt-1 border-bottom pb-2 text-center fw-semibold nd-post-sponsored-heading">Sponsored</h6>
+                            <?php echo $sidebar_ad_html; ?>
+                        </div>
+                        <?php endif; ?>
                     </aside>
                 </div>
-                <?php endif; ?>
             </div>
 
             <div class="row mt-2">

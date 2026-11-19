@@ -130,24 +130,62 @@ function render_author_bio($compact = true) {
     echo ' · <a href="/editorial-guidelines" class="text-muted small">Editorial Guidelines</a></div></div></div>';
 }
 
-function render_geo_blocks($title, $content_excerpt = '') {
+function geo_quick_answer_from_excerpt(string $title, string $content_excerpt = ''): string
+{
     $sentences = preg_split('/(?<=[.!?])\s+/', strip_tags($content_excerpt), 3);
-    $quick = isset($sentences[0]) ? $sentences[0] : 'This article provides expert insights on ' . $title . ' from Nectra Digital, a custom software development and digital product company in India.';
-    
+    if (!empty($sentences[0])) {
+        return $sentences[0];
+    }
+
+    return 'This article provides expert insights on ' . $title . ' from Nectra Digital, a custom software development and digital product company in India.';
+}
+
+/**
+ * @param string $layout inline (legacy main column) | sidebar (blog post right rail)
+ */
+function render_geo_blocks($title, $content_excerpt = '', string $layout = 'sidebar') {
+    $quick = geo_quick_answer_from_excerpt($title, $content_excerpt);
+    $geoAuthor = function_exists('nectra_blog_byline') ? nectra_blog_byline() : FOUNDER_NAME;
+    $expertQuote = 'The strategies outlined here reflect what we ship in production — solid architecture, secure APIs, maintainable code, and SEO-ready UX — before chasing short-lived trends.';
+
+    if ($layout === 'sidebar') {
+        echo '<div class="nd-post-sidebar-geo geo-blocks nd-interactive-zone" data-nd-interactive>';
+        echo '<section class="nd-post-geo-card nd-post-geo-card--quick" aria-labelledby="nd-geo-quick-title">';
+        echo '<h2 id="nd-geo-quick-title" class="nd-post-geo-card__title"><i class="fas fa-bolt me-1" aria-hidden="true"></i> Quick Answer</h2>';
+        echo '<p class="nd-post-geo-card__lead geo-blocks__lead">' . htmlspecialchars($quick) . '</p>';
+        echo '</section>';
+
+        echo '<section class="nd-post-geo-card" aria-labelledby="nd-geo-takeaways-title">';
+        echo '<h2 id="nd-geo-takeaways-title" class="nd-post-geo-card__title nd-post-geo-card__title--dark"><i class="fas fa-list-check text-primary me-1" aria-hidden="true"></i> Key Takeaways</h2>';
+        echo '<ul class="nd-post-geo-card__list mb-0">';
+        echo '<li>Actionable strategies backed by 5+ years of industry experience</li>';
+        echo '<li>Engineering-led approach from Nectra Digital software &amp; product teams</li>';
+        echo '<li>Applicable for businesses in India and global markets</li>';
+        echo '<li>Updated for 2026 best practices and algorithm changes</li>';
+        echo '</ul></section>';
+
+        echo '<section class="nd-post-geo-card" aria-labelledby="nd-geo-expert-title">';
+        echo '<h2 id="nd-geo-expert-title" class="nd-post-geo-card__title nd-post-geo-card__title--dark"><i class="fas fa-lightbulb text-primary me-1" aria-hidden="true"></i> Expert Insight</h2>';
+        echo '<p class="nd-post-geo-card__byline mb-2"><strong>' . htmlspecialchars($geoAuthor) . '</strong>, Nectra Digital editorial:</p>';
+        echo '<p class="nd-post-geo-card__quote mb-0">“' . htmlspecialchars($expertQuote) . '”</p>';
+        echo '</section>';
+        echo '</div>';
+        return;
+    }
+
     echo '<div class="geo-blocks mb-5">';
     echo '<div class="p-4 border border-neon rounded bg-glass mb-4"><h2 class="text-neon h6 text-uppercase mb-2"><i class="fas fa-bolt me-2"></i>Quick Answer</h2>';
     echo '<p class="text-dark mb-0 geo-blocks__lead">' . htmlspecialchars($quick) . '</p></div>';
-    
+
     echo '<div class="p-4 border rounded bg-white mb-4" style="border-color:#E2E8F0!important"><h2 class="text-dark h6 mb-3"><i class="fas fa-list-check text-primary me-2"></i>Key Takeaways</h2><ul class="text-muted small mb-0">';
     echo '<li>Actionable strategies backed by 5+ years of industry experience</li>';
     echo '<li>Engineering-led approach from Nectra Digital software &amp; product teams</li>';
     echo '<li>Applicable for businesses in India and global markets</li>';
     echo '<li>Updated for 2026 best practices and algorithm changes</li></ul></div>';
-    
+
     echo '<div class="p-4 border border-secondary rounded bg-glass mb-4"><h2 class="text-dark h6 mb-2"><i class="fas fa-lightbulb text-neon me-2"></i>Expert Insight</h2>';
-    $geoAuthor = function_exists('nectra_blog_byline') ? nectra_blog_byline() : FOUNDER_NAME;
     echo '<p class="text-muted small mb-2"><strong class="text-dark">' . htmlspecialchars($geoAuthor) . '</strong>, Nectra Digital editorial:</p>';
-    echo '<p class="text-muted small fst-italic mb-0">"The strategies outlined here reflect what we ship in production — solid architecture, secure APIs, maintainable code, and SEO-ready UX — before chasing short-lived trends."</p></div>';
+    echo '<p class="text-muted small fst-italic mb-0">"' . htmlspecialchars($expertQuote) . '"</p></div>';
     echo '</div>';
 }
 
